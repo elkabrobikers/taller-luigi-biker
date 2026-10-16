@@ -18,7 +18,6 @@
       --blanco: #f8f8fa;
       --gris: #aaaab5;
       --borde: #414149;
-      --verde: #59d99b;
     }
 
     * {
@@ -415,9 +414,7 @@
       }
     }
 
-    /* ======================================
-       IMPRESIÓN Y GUARDADO EN PDF
-       ====================================== */
+    /* IMPRESIÓN Y GUARDADO EN PDF */
 
     @media print {
       @page {
@@ -553,10 +550,8 @@
 </head>
 
 <body>
-
   <div class="contenedor">
 
-    <!-- BOTONES DE ACCIÓN -->
     <div id="acciones" class="acciones" hidden>
       <p>Comprobante de servicio · Taller Luigi Biker</p>
 
@@ -575,7 +570,6 @@
       </div>
     </div>
 
-    <!-- COMPROBANTE -->
     <main class="comprobante">
 
       <header class="cabecera-documento">
@@ -594,12 +588,12 @@
       </header>
 
       <div class="contenido-documento">
-
         <div class="titulo-documento">
           <span class="etiqueta">COMPROBANTE DE SERVICIO</span>
           <h2>Detalle de reparación</h2>
           <p>
-            Resumen del trabajo realizado en tu motocicleta.
+            Resumen del trabajo realizado en la motocicleta.
+            Documento sin datos personales del propietario.
           </p>
         </div>
 
@@ -608,7 +602,6 @@
             Consultando los datos del comprobante...
           </p>
         </div>
-
       </div>
 
       <footer class="pie-documento">
@@ -619,7 +612,6 @@
       </footer>
 
     </main>
-
   </div>
 
   <script type="module">
@@ -669,7 +661,6 @@
 
     function crearSeccion(titulo, icono) {
       const seccion = nodo("section", "", "bloque");
-
       const encabezado = nodo("h3");
 
       encabezado.append(
@@ -678,7 +669,6 @@
       );
 
       seccion.appendChild(encabezado);
-
       $("contenido").appendChild(seccion);
 
       return seccion;
@@ -705,11 +695,19 @@
         // VALIDAR NÚMERO DE REPARACIÓN
         // ==================================
 
-        const id = new URLSearchParams(
+        const idTexto = new URLSearchParams(
           location.search
         ).get("id");
 
-        if (!id || !/^\d+$/.test(id)) {
+        if (!idTexto || !/^\d+$/.test(idTexto)) {
+          throw new Error(
+            "El número de reparación no es válido."
+          );
+        }
+
+        const id = Number(idTexto);
+
+        if (!Number.isSafeInteger(id) || id <= 0) {
           throw new Error(
             "El número de reparación no es válido."
           );
@@ -737,7 +735,7 @@
           .from("perfiles")
           .select("rol,activo")
           .eq("id", sesion.user.id)
-          .single();
+          .maybeSingle();
 
         if (errorPerfil) throw errorPerfil;
 
@@ -752,55 +750,39 @@
         }
 
         // ==================================
-        // CONSULTAR REPARACIÓN
+        // CONSULTAR COMPROBANTE MEDIANTE RPC
         // ==================================
+        // La función valida los permisos en Supabase.
+        // No consulta directamente las tablas protegidas.
 
         const {
-          data: trabajo,
-          error: errorTrabajo
-        } = await supabase
-          .from("reparaciones")
-          .select(
-            "id,moto_id,descripcion,diagnostico,estado," +
-            "fecha_ingreso,fecha_entrega,costo_mano_obra," +
-            "mostrar_mano_obra"
-          )
-          .eq("id", id)
-          .single();
+          data,
+          error
+        } = await supabase.rpc(
+          "consultar_comprobante_cliente",
+          {
+            p_reparacion_id: id
+          }
+        );
 
-        if (errorTrabajo) throw errorTrabajo;
+        if (error) throw error;
 
-        if (!trabajo) {
+        if (!data || !data.moto || !data.reparacion) {
           throw new Error(
-            "No encontramos la reparación solicitada."
+            "No encontramos el comprobante solicitado."
           );
         }
 
-        // ==================================
-        // VERIFICAR PROPIETARIO
-        // ==================================
+        const moto = data.moto;
+        const trabajo = data.reparacion;
 
-        const {
-          data: moto,
-          error: errorMoto
-        } = await supabase
-          .from("motocicletas")
-          .select(
-            "placa,marca,modelo,color,propietario_id"
-          )
-          .eq("id", trabajo.moto_id)
-          .eq("propietario_id", sesion.user.id)
-          .single();
+        const repuestos = Array.isArray(data.repuestos)
+          ? data.repuestos
+          : [];
 
-        if (errorMoto || !moto) {
-          throw new Error(
-            "Esta reparación no está vinculada a tu cuenta."
-          );
-        }
-
-        // ==================================
-        // VALIDAR REPARACIÓN FINALIZADA
-        // ==================================
+        const avances = Array.isArray(data.avances)
+          ? data.avances
+          : [];
 
         if (trabajo.estado !== "finalizada") {
           throw new Error(
@@ -808,39 +790,6 @@
             "la reparación esté finalizada."
           );
         }
-
-        // ==================================
-        // CONSULTAR REPUESTOS
-        // ==================================
-
-        const {
-          data: repuestos,
-          error: errorRepuestos
-        } = await supabase
-          .from("repuestos_trabajo_mecanico")
-          .select(
-            "nombre,cantidad,precio_unitario"
-          )
-          .eq("reparacion_id", trabajo.id);
-
-        if (errorRepuestos) throw errorRepuestos;
-
-        // ==================================
-        // CONSULTAR AVANCES
-        // ==================================
-
-        const {
-          data: avances,
-          error: errorAvances
-        } = await supabase
-          .from("avances_reparacion")
-          .select("descripcion,creado_en")
-          .eq("reparacion_id", trabajo.id)
-          .order("creado_en", {
-            ascending: true
-          });
-
-        if (errorAvances) throw errorAvances;
 
         // ==================================
         // GENERAR COMPROBANTE
@@ -944,7 +893,7 @@
 
         // AVANCES REGISTRADOS
 
-        if (avances?.length) {
+        if (avances.length) {
           const seccionAvances = crearSeccion(
             "Avances registrados",
             "📋"
@@ -962,13 +911,11 @@
             "tr"
           );
 
-          ["Fecha", "Trabajo registrado"].forEach(
-            texto => {
-              filaEncabezado.appendChild(
-                nodo("th", texto)
-              );
-            }
-          );
+          ["Fecha", "Trabajo registrado"].forEach(texto => {
+            filaEncabezado.appendChild(
+              nodo("th", texto)
+            );
+          });
 
           encabezado.appendChild(filaEncabezado);
 
@@ -1002,7 +949,7 @@
           seccionAvances.appendChild(envoltura);
         }
 
-        // REPUESTOS
+        // REPUESTOS UTILIZADOS
 
         const seccionRepuestos = crearSeccion(
           "Repuestos utilizados",
@@ -1011,7 +958,7 @@
 
         let totalRepuestos = 0;
 
-        if (!repuestos?.length) {
+        if (!repuestos.length) {
           seccionRepuestos.appendChild(
             nodo(
               "p",
@@ -1176,7 +1123,7 @@
         textoMensaje.append(
           nodo(
             "strong",
-            "¡Tu motocicleta está lista!"
+            "¡La motocicleta está lista!"
           ),
           nodo(
             "p",
@@ -1186,7 +1133,6 @@
         );
 
         mensaje.appendChild(textoMensaje);
-
         $("contenido").appendChild(mensaje);
 
         // MOSTRAR BOTONES
@@ -1198,6 +1144,8 @@
           "Error al cargar comprobante:",
           error
         );
+
+        $("acciones").hidden = true;
 
         $("contenido").replaceChildren(
           nodo(
@@ -1212,6 +1160,5 @@
 
     iniciar();
   </script>
-
 </body>
 </html>
