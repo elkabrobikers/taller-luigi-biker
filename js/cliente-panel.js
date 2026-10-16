@@ -81,32 +81,19 @@ function agregarDato(destino, titulo, valor) {
 // FOTOGRAFÍAS DE SUPABASE STORAGE
 // ==========================================
 
-// Los buckets fotos-motos y fotos-productos
-// están configurados como públicos.
-//
-// La base de datos puede guardar:
-// motocicletas/archivo.jpg
-// productos/archivo.jpg
-//
-// Esta función convierte esas rutas en URLs
-// públicas que el navegador puede mostrar.
-
 function obtenerUrlFoto(rutaGuardada, bucket) {
   const ruta = String(rutaGuardada || "").trim();
 
   if (!ruta) return null;
 
-  // Si ya es una URL HTTPS completa.
   if (/^https:\/\//i.test(ruta)) {
     return ruta;
   }
 
-  // Rechazar otros esquemas.
   if (/^[a-z][a-z0-9+.-]*:/i.test(ruta)) {
     return null;
   }
 
-  // Evitar repetir el nombre del bucket.
   const prefijo = `${bucket}/`;
 
   const rutaLimpia = ruta.startsWith(prefijo)
@@ -202,6 +189,7 @@ async function iniciar() {
 
 // ==========================================
 // BÚSQUEDA POR PLACA
+// CUALQUIER CLIENTE AUTENTICADO
 // ==========================================
 
 $("form-buscar").addEventListener("submit", async evento => {
@@ -222,7 +210,7 @@ async function buscarMoto(silencioso = false) {
   if (!placa) {
     mostrarMensaje(
       "mensaje-busqueda",
-      "Escribe la placa de tu moto."
+      "Escribe la placa de la motocicleta."
     );
     return;
   }
@@ -238,12 +226,13 @@ async function buscarMoto(silencioso = false) {
   }
 
   try {
-    // Solo motocicletas vinculadas al cliente.
-    // Supabase RLS sigue aplicándose.
+    // CAMBIO PRINCIPAL:
+    // Se busca por placa, sin filtrar por propietario_id.
+    // Las políticas RLS de Supabase siguen aplicándose.
+
     const { data: motos, error } = await supabase
       .from("motocicletas")
       .select("id,placa,marca,modelo,color,foto_url")
-      .eq("propietario_id", usuario.id)
       .ilike("placa", placa)
       .limit(1);
 
@@ -257,8 +246,8 @@ async function buscarMoto(silencioso = false) {
 
       mostrarMensaje(
         "mensaje-busqueda",
-        "No encontramos una motocicleta vinculada a tu cuenta " +
-        "con esa placa. Verifica la placa o consulta al taller."
+        "No encontramos una motocicleta con esa placa. " +
+        "Verifica la placa o consulta al taller."
       );
 
       return;
@@ -385,7 +374,7 @@ function dibujarMoto(moto, trabajo, avances, repuestos) {
     "Todavía no hay una reparación registrada para esta moto.";
 
   // ========================================
-  // FOTO REAL DE LA MOTOCICLETA
+  // FOTO DE LA MOTOCICLETA
   // ========================================
 
   const contenedor = $("contenedor-foto");
@@ -731,7 +720,6 @@ async function cargarTienda() {
       : "";
 
     dibujarProductos();
-
     mostrarMensaje("mensaje-tienda", "");
 
   } catch (error) {
@@ -785,7 +773,6 @@ function dibujarProductos() {
       "producto"
     );
 
-    // FOTO REAL DEL PRODUCTO
     const url = urlFotoProducto(
       producto.foto_url
     );
@@ -912,7 +899,6 @@ async function cargarAvisos() {
     avisos = nuevosAvisos;
 
     dibujarAvisos();
-
     mostrarMensaje("mensaje-avisos", "");
 
   } catch (error) {
