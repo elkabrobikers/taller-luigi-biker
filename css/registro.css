@@ -1,0 +1,81 @@
+
+.registro-clientes {
+  border: 1px solid #46404a;
+}
+
+.registro-clientes h2 {
+  color: #ff7900;
+}
+
+.registro-form {
+  width: 100%;
+}
+
+.registro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.registro-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #e8e8ec;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.registro-grid input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 14px;
+  background: #121217;
+  color: white;
+  border: 1px solid #484850;
+  border-radius: 9px;
+  font: inherit;
+}
+
+.registro-grid input:focus {
+  outline: 1px solid #ff7900;
+}
+
+#crear-cuenta {
+  background: #ff7900;
+  color: #171717;
+  border: 0;
+  border-radius: 9px;
+  padding: 14px 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#crear-cuenta:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+#mensaje-registro {
+  margin-top: 15px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.nota-registro {
+  color: #aaaab4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .registro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #crear-cuenta {
+    width: 100%;
+  }
+}

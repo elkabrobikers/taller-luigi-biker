@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Registrar motocicleta | Luigi Biker</title>
+
+  <link rel="stylesheet" href="css/motos.css">
+  <script type="module" src="js/motos.js"></script>
+</head>
+<body>
+
+  <div id="verificando" class="verificando">
+    Verificando acceso de administrador...
+  </div>
+
+  <main id="contenido" class="contenedor" hidden>
+
+    <a href="admin.html" class="volver">
+      ← Volver al administrador
+    </a>
+
+    <header class="encabezado">
+      <span>🏍️ TALLER LUIGI BIKER</span>
+      <h1>Registrar motocicleta</h1>
+      <p>
+        Completa los datos del propietario,
+        la motocicleta y su fotografía.
+      </p>
+    </header>
+
+    <form id="form-moto">
+
+      <h2>🏍️ Datos de la motocicleta</h2>
+
+      <div class="grid">
+
+        <div class="campo">
+          <label for="placa">Placa *</label>
+          <input id="placa" type="text"
+                 placeholder="Ej: 1234ABC"
+                 maxlength="12" required>
+        </div>
+
+        <div class="campo">
+          <label for="marca">Marca *</label>
+          <input id="marca" type="text"
+                 placeholder="Ej: Yamaha"
+                 required>
+        </div>
+
+        <div class="campo">
+          <label for="modelo">Modelo</label>
+          <input id="modelo" type="text"
+                 placeholder="Ej: FZ 2.0">
+        </div>
+
+        <div class="campo">
+          <label for="color">Color</label>
+          <input id="color" type="text"
+                 placeholder="Ej: Negro">
+        </div>
+
+      </div>
+
+      <h2>👤 Datos del propietario</h2>
+
+      <div class="grid">
+
+        <div class="campo">
+          <label for="propietario">
+            Nombre completo *
+          </label>
+          <input id="propietario" type="text"
+                 placeholder="Nombre del propietario"
+                 required>
+        </div>
+
+        <div class="campo">
+          <label for="celular">Celular *</label>
+          <input id="celular" type="tel"
+                 placeholder="Ej: 70000000"
+                 required>
+        </div>
+
+      </div>
+
+      <h2>🔧 Información del trabajo</h2>
+
+      <div class="campo">
+        <label for="observaciones">
+          Problema o servicio solicitado
+        </label>
+        <textarea id="observaciones"
+                  rows="4"
+                  placeholder="Ej: Cambio de aceite, revisión de frenos..."></textarea>
+      </div>
+
+      <h2>📸 Fotografía de la motocicleta</h2>
+
+      <p class="ayuda">
+        Puedes tomar una foto con tu celular
+        o seleccionar una imagen de tus archivos.
+      </p>
+
+      <div class="foto-opciones">
+
+        <label for="foto-camara" class="boton-foto">
+          📷 Tomar fotografía
+        </label>
+
+        <input
+          id="foto-camara"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden>
+
+        <label for="foto-archivo" class="boton-foto secundario">
+          🖼️ Elegir de galería
+        </label>
+
+        <input
+          id="foto-archivo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden>
+
+      </div>
+
+      <div class="foto-preview" id="foto-preview">
+
+        <div id="foto-placeholder">
+          <div class="foto-icono">🏍️</div>
+          <p>No hay fotografía seleccionada</p>
+        </div>
+
+        <img
+          id="vista-foto"
+          alt="Fotografía seleccionada de la motocicleta"
+          hidden>
+
+      </div>
+
+      <div class="foto-detalles" id="foto-detalles" hidden>
+        <p id="nombre-foto"></p>
+
+        <button type="button"
+                id="quitar-foto"
+                class="btn-quitar">
+          Quitar fotografía
+        </button>
+      </div>
+
+      <p class="ayuda">
+        Formatos: JPG, PNG o WebP. Máximo: 5 MB.
+      </p>
+
+      <button type="submit"
+              id="guardar"
+              class="btn-guardar"
+              disabled>
+        Guardar motocicleta
+      </button>
+
+      <p id="mensaje" role="status" aria-live="polite"></p>
+
+    </form>
+
+  </main>
+
+</body>
+</html>

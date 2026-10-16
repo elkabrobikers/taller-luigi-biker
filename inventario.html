@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101014">
+
+  <title>Inventario | Taller Luigi Biker</title>
+
+  <link rel="stylesheet" href="./css/inventario.css?v=6">
+  <script type="module" src="./js/inventario.js?v=6"></script>
+</head>
+
+<body>
+  <div id="verificando" class="verificando">
+    Verificando acceso al inventario...
+  </div>
+
+  <main id="contenido" class="contenedor" hidden>
+
+    <a href="./admin.html" class="volver">
+      ← Volver al administrador
+    </a>
+
+    <header class="encabezado">
+      <span class="etiqueta">🏍️ TALLER LUIGI BIKER</span>
+      <h1>Inventario de repuestos</h1>
+      <p>
+        Administra productos, precios, fotografías y cantidades
+        disponibles desde un solo lugar.
+      </p>
+    </header>
+
+    <section class="resumen" aria-label="Resumen del inventario">
+      <article>
+        <span>📦 Productos registrados</span>
+        <strong id="total-productos">—</strong>
+        <small>Productos consultados</small>
+      </article>
+
+      <article class="tarjeta-alerta">
+        <span>⚠️ Stock bajo</span>
+        <strong id="stock-bajo">—</strong>
+        <small>De 1 a 5 unidades</small>
+      </article>
+
+      <article class="tarjeta-agotado">
+        <span>🚫 Sin existencias</span>
+        <strong id="sin-stock">—</strong>
+        <small>Productos con 0 unidades</small>
+      </article>
+    </section>
+
+    <div id="alerta-inventario"
+         class="alerta-inventario"
+         hidden>
+      <strong>⚠️ Atención al inventario</strong>
+      <p id="texto-alerta"></p>
+      <button id="ver-alertas"
+              type="button"
+              class="btn-alerta">
+        Ver productos que necesitan reposición
+      </button>
+    </div>
+
+    <section class="panel" id="panel-formulario">
+      <div class="cabecera-panel">
+        <span class="etiqueta">GESTIÓN DE PRODUCTOS</span>
+        <h2 id="titulo-formulario">➕ Registrar producto</h2>
+      </div>
+
+      <form id="form-producto">
+
+        <div class="grid">
+          <div class="campo">
+            <label for="nombre">Nombre del producto *</label>
+            <input
+              id="nombre"
+              type="text"
+              placeholder="Ej: Pastillas de freno"
+              maxlength="150"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" required>
+              <option value="">Seleccionar</option>
+              <option value="Repuestos">Repuestos</option>
+              <option value="Accesorios">Accesorios</option>
+              <option value="Aceites">Aceites</option>
+              <option value="Llantas">Llantas</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="precio">Precio de venta (Bs.) *</label>
+            <input
+              id="precio"
+              type="number"
+              min="0"
+              step="0.01"
+              value="0"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="stock">Cantidad disponible *</label>
+            <input
+              id="stock"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción</label>
+          <textarea
+            id="descripcion"
+            rows="3"
+            placeholder="Marca, compatibilidad y detalles..."
+          ></textarea>
+        </div>
+
+        <div class="campo">
+          <label>Fotografía del producto</label>
+
+          <div class="foto-acciones">
+            <label class="btn-foto" for="foto-camara">
+              📷 Tomar fotografía
+            </label>
+
+            <label class="btn-foto" for="foto-archivo">
+              🖼️ Elegir archivo
+            </label>
+          </div>
+
+          <input
+            id="foto-camara"
+            class="archivo-oculto"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+          >
+
+          <input
+            id="foto-archivo"
+            class="archivo-oculto"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+          >
+
+          <div id="vista-foto" class="vista-foto" hidden>
+            <img id="imagen-preview"
+                 alt="Vista previa del producto">
+
+            <button
+              id="quitar-foto"
+              type="button"
+              class="btn-secundario">
+              Quitar selección
+            </button>
+          </div>
+
+          <p class="ayuda">
+            Formatos: JPG, PNG o WebP. Máximo: 5 MB.
+            Al editar sin elegir otra foto, se conserva la actual.
+          </p>
+        </div>
+
+        <div class="botones-formulario">
+          <button id="guardar" type="submit" disabled>
+            Guardar producto
+          </button>
+
+          <button
+            id="cancelar"
+            type="button"
+            class="btn-secundario"
+            hidden>
+            Cancelar edición
+          </button>
+        </div>
+
+        <p id="mensaje-form"
+           role="status"
+           aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="panel" id="panel-listado">
+      <div class="titulo-lista">
+        <div>
+          <span class="etiqueta">CONTROL DE EXISTENCIAS</span>
+          <h2>📦 Productos registrados</h2>
+        </div>
+
+        <button id="actualizar"
+                type="button"
+                class="btn-secundario">
+          ↻ Actualizar
+        </button>
+      </div>
+
+      <div class="filtros-inventario">
+        <div class="campo">
+          <label for="buscar">Buscar producto</label>
+          <input
+            id="buscar"
+            type="search"
+            placeholder="Nombre, categoría o descripción"
+          >
+        </div>
+
+        <div class="campo">
+          <label for="filtro-stock">
+            Filtrar por existencias
+          </label>
+
+          <select id="filtro-stock">
+            <option value="todos">Todos los productos</option>
+            <option value="disponibles">
+              Con stock disponible
+            </option>
+            <option value="bajo">
+              Stock bajo (1 a 5)
+            </option>
+            <option value="agotados">
+              Agotados (0 unidades)
+            </option>
+            <option value="inactivos">
+              Productos inactivos
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <p id="mensaje-lista"
+         role="status"
+         aria-live="polite"></p>
+
+      <div id="lista" class="lista-productos"></div>
+    </section>
+
+    <footer class="pie">
+      © 2026 Taller Luigi Biker · Administración de inventario
+    </footer>
+
+  </main>
+</body>
+</html>

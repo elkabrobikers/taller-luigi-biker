@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Ventas | Taller Luigi Biker</title>
+
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/ventas.css">
+
+  <!-- BIBLIOTECA PARA GENERAR PDF -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js">
+  </script>
+
+  <!-- SISTEMA DE VENTAS CON SUPABASE -->
+  <script
+    type="module"
+    src="js/ventas.js">
+  </script>
+
+</head>
+<body>
+
+  <!-- VERIFICACIÓN DE ACCESO -->
+  <div id="verificando" class="verificando">
+    Verificando acceso a ventas...
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main id="contenido" class="contenedor" hidden>
+
+    <!-- VOLVER AL ADMINISTRADOR -->
+    <a href="admin.html" class="volver">
+      ← Volver al administrador
+    </a>
+
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+
+      <span>
+        🏍️ TALLER LUIGI BIKER
+      </span>
+
+      <h1>🛒 Sistema de ventas</h1>
+
+      <p>
+        Registra ventas, controla existencias
+        y genera comprobantes PDF.
+      </p>
+
+    </header>
+
+    <!-- NUEVA VENTA -->
+    <section class="panel">
+
+      <h2>➕ Nueva venta</h2>
+
+      <!-- SELECCIONAR PRODUCTO -->
+      <div class="campo">
+
+        <label for="producto">
+          Seleccionar producto
+        </label>
+
+        <select id="producto">
+          <option value="">
+            Cargando productos...
+          </option>
+        </select>
+
+      </div>
+
+      <!-- CANTIDAD Y BOTÓN AGREGAR -->
+      <div class="fila-agregar">
+
+        <div class="campo">
+
+          <label for="cantidad">
+            Cantidad
+          </label>
+
+          <input
+            id="cantidad"
+            type="number"
+            min="1"
+            step="1"
+            value="1"
+          >
+
+        </div>
+
+        <button
+          id="agregar"
+          type="button">
+          + Agregar producto
+        </button>
+
+      </div>
+
+      <!-- CARRITO -->
+      <h3>🛍️ Productos de la venta</h3>
+
+      <div class="tabla-contenedor">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody id="carrito">
+
+            <tr>
+              <td colspan="5">
+                Todavía no agregaste productos.
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- TOTAL -->
+      <div class="total">
+
+        <span>
+          Total de venta
+        </span>
+
+        <strong id="total">
+          Bs. 0.00
+        </strong>
+
+      </div>
+
+      <!-- CONFIRMAR VENTA -->
+      <button
+        id="confirmar"
+        type="button"
+        class="btn-confirmar"
+        disabled>
+        ✅ Confirmar venta y descontar stock
+      </button>
+
+      <!-- MENSAJES DE LA VENTA -->
+      <p
+        id="mensaje-venta"
+        role="status"
+        aria-live="polite">
+      </p>
+
+    </section>
+
+    <!-- HISTORIAL DE VENTAS -->
+    <section class="panel">
+
+      <div class="titulo-historial">
+
+        <h2>📋 Historial de ventas</h2>
+
+        <button
+          id="actualizar"
+          type="button">
+          ↻ Actualizar
+        </button>
+
+      </div>
+
+      <p
+        id="mensaje-historial"
+        role="status"
+        aria-live="polite">
+      </p>
+
+      <!-- AQUÍ APARECEN LAS VENTAS
+           Y SUS BOTONES PARA DESCARGAR PDF -->
+      <div
+        id="historial"
+        class="historial">
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mecánicos | Taller Luigi Biker</title>
+  <link rel="stylesheet" href="./css/mecanicos.css?v=7">
+  <script type="module" src="./js/mecanicos.js?v=7"></script>
+</head>
+<body>
+
+  <div id="verificando" class="verificando">
+    Verificando acceso...
+  </div>
+
+  <main id="contenido" class="contenedor" hidden>
+    <a href="./admin.html" class="volver">
+      ← Volver al administrador
+    </a>
+
+    <header class="encabezado">
+      <span>🏍️ TALLER LUIGI BIKER</span>
+      <h1>Gestión de mecánicos</h1>
+      <p>
+        Registra, edita, activa, desactiva o elimina
+        mecánicos individualmente.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>➕ Registrar nuevo mecánico</h2>
+
+      <form id="form-registro">
+        <div class="campos">
+          <div class="campo">
+            <label for="nuevo-nombre">Nombre completo</label>
+            <input id="nuevo-nombre" type="text"
+                   required maxlength="100"
+                   placeholder="Carlos Pérez">
+          </div>
+
+          <div class="campo">
+            <label for="nuevo-usuario">Nombre de usuario</label>
+            <input id="nuevo-usuario" type="text"
+                   required minlength="3" maxlength="30"
+                   pattern="[a-zA-Z0-9_]+"
+                   placeholder="carlos123">
+          </div>
+
+          <div class="campo">
+            <label for="nuevo-email">Correo electrónico</label>
+            <input id="nuevo-email" type="email" required
+                   placeholder="carlos@ejemplo.com">
+          </div>
+
+          <div class="campo">
+            <label for="nuevo-celular">Celular</label>
+            <input id="nuevo-celular" type="tel"
+                   maxlength="30" placeholder="70000000">
+          </div>
+
+          <div class="campo">
+            <label for="nueva-clave">Contraseña inicial</label>
+            <input id="nueva-clave" type="password"
+                   required minlength="8"
+                   autocomplete="new-password">
+          </div>
+
+          <div class="campo">
+            <label for="confirmar-clave">Confirmar contraseña</label>
+            <input id="confirmar-clave" type="password"
+                   required minlength="8"
+                   autocomplete="new-password">
+          </div>
+        </div>
+
+        <button id="crear-cuenta" type="submit">
+          Crear cuenta de mecánico
+        </button>
+
+        <p id="mensaje-registro" role="status"></p>
+      </form>
+
+      <p class="nota">
+        El mecánico iniciará sesión con su correo y contraseña.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>👨‍🔧 Mecánicos registrados</h2>
+
+      <div class="herramientas">
+        <input id="buscar" type="search"
+               placeholder="Buscar por nombre o celular">
+
+        <button id="actualizar" type="button">
+          ↻ Actualizar
+        </button>
+      </div>
+
+      <p id="mensaje" role="status">
+        Cargando mecánicos...
+      </p>
+
+      <div id="lista" class="lista"></div>
+    </section>
+  </main>
+</body>
+</html>

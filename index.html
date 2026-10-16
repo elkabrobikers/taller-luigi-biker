@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Taller Luigi Biker | Inicio</title>
+
+  <link rel="stylesheet" href="./css/estilos.css">
+  <link rel="stylesheet" href="./css/seguimiento-publico.css">
+
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+
+  <!-- MENÚ PRINCIPAL -->
+  <header class="encabezado">
+    <nav class="navbar">
+      <a href="#inicio" class="logo">
+        🏍️ <span>LUIGI</span> BIKER
+      </a>
+
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false">
+        ☰
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#repuestos">Repuestos</a>
+        <a href="#seguimiento">Seguimiento</a>
+        <a href="#contacto">Contacto</a>
+
+        <a href="./login.html" class="btn-acceso">
+          Iniciar sesión
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PORTADA -->
+  <section id="inicio" class="hero">
+    <div class="hero-contenido">
+      <span class="etiqueta">
+        BIENVENIDO A NUESTRO TALLER
+      </span>
+
+      <h1>
+        TU MOTO EN LAS
+        <span>MEJORES MANOS</span>
+      </h1>
+
+      <p>
+        En Taller Luigi Biker ofrecemos reparación,
+        mantenimiento y venta de repuestos y accesorios
+        para motocicletas.
+      </p>
+
+      <div class="hero-botones">
+        <a href="#servicios" class="btn-principal">
+          Ver servicios
+        </a>
+
+        <a href="#seguimiento" class="btn-secundario">
+          Seguir mi moto
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios" class="seccion">
+    <div class="titulo-seccion">
+      <span>NUESTRO TRABAJO</span>
+      <h2>Servicios del taller</h2>
+      <p>
+        Cuidamos tu motocicleta con atención y dedicación.
+      </p>
+    </div>
+
+    <div class="tarjetas">
+      <article class="tarjeta">
+        <img
+          src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900"
+          alt="Motocicleta deportiva"
+          loading="lazy"
+        >
+        <div class="tarjeta-contenido">
+          <h3>Reparación de motos</h3>
+          <p>
+            Reparación de motores, frenos y sistemas
+            mecánicos de motocicletas.
+          </p>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <img
+          src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900"
+          alt="Motocicleta para mantenimiento"
+          loading="lazy"
+        >
+        <div class="tarjeta-contenido">
+          <h3>Mantenimiento</h3>
+          <p>
+            Cambio de aceite, revisión general
+            y mantenimiento preventivo.
+          </p>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <img
+          src="https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=900"
+          alt="Servicio de diagnóstico"
+          loading="lazy"
+        >
+        <div class="tarjeta-contenido">
+          <h3>Diagnóstico</h3>
+          <p>
+            Revisión y diagnóstico de problemas
+            para encontrar la solución adecuada.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- REPUESTOS -->
+  <section id="repuestos" class="seccion fondo-alterno">
+    <div class="titulo-seccion">
+      <span>PRODUCTOS</span>
+      <h2>Repuestos y accesorios</h2>
+      <p>
+        Encuentra lo que necesitas para tu motocicleta.
+      </p>
+    </div>
+
+    <div class="tarjetas">
+      <article class="tarjeta producto">
+        <div class="producto-icono">⚙️</div>
+        <h3>Repuestos</h3>
+        <p>Piezas y componentes para motocicletas.</p>
+        <a href="#catalogo" class="btn-producto"
+           data-categoria="repuestos">
+          Consultar
+        </a>
+      </article>
+
+      <article class="tarjeta producto">
+        <div class="producto-icono">🪖</div>
+        <h3>Accesorios</h3>
+        <p>Cascos y accesorios para motociclistas.</p>
+        <a href="#catalogo" class="btn-producto"
+           data-categoria="accesorios">
+          Consultar
+        </a>
+      </article>
+
+      <article class="tarjeta producto">
+        <div class="producto-icono">🛢️</div>
+        <h3>Aceites</h3>
+        <p>Lubricantes y productos para mantenimiento.</p>
+        <a href="#catalogo" class="btn-producto"
+           data-categoria="aceites">
+          Consultar
+        </a>
+      </article>
+    </div>
+
+    <!-- CATÁLOGO REAL -->
+    <div id="catalogo" class="catalogo-publico">
+      <div class="titulo-seccion">
+        <span>TIENDA LUIGI BIKER</span>
+        <h2>Productos disponibles</h2>
+        <p>
+          Consulta precios y existencias actuales.
+        </p>
+      </div>
+
+      <div class="catalogo-filtros">
+        <input
+          type="search"
+          id="buscar-producto-publico"
+          placeholder="Buscar producto..."
+          aria-label="Buscar producto"
+        >
+
+        <select
+          id="categoria-publica"
+          aria-label="Filtrar categoría">
+          <option value="">Todas las categorías</option>
+        </select>
+      </div>
+
+      <p id="mensaje-catalogo" class="mensaje-publico"
+         role="status"></p>
+
+      <div id="lista-productos-publicos"
+           class="productos-publicos"></div>
+    </div>
+  </section>
+
+  <!-- SEGUIMIENTO -->
+  <section id="seguimiento" class="seccion">
+    <div class="titulo-seccion">
+      <span>SEGUIMIENTO</span>
+      <h2>¿Cómo va tu motocicleta?</h2>
+      <p>
+        Consulta el estado de reparación de tu moto,
+        sin crear una cuenta.
+      </p>
+    </div>
+
+    <div class="seguimiento-caja">
+      <div class="seguimiento-icono">🏍️</div>
+
+      <h3>Buscar mi motocicleta</h3>
+      <p>Ingresa el número de placa de tu moto.</p>
+
+      <form id="form-buscar-moto">
+        <input
+          type="text"
+          id="placa"
+          placeholder="Ejemplo: 7075UXB"
+          maxlength="12"
+          autocomplete="off"
+          required
+        >
+
+        <button type="submit"
+                id="btn-buscar-moto"
+                class="btn-principal">
+          Buscar motocicleta
+        </button>
+      </form>
+
+      <p
+        id="resultado-busqueda"
+        class="resultado-busqueda"
+        role="status"
+        aria-live="polite">
+      </p>
+    </div>
+
+    <!-- RESULTADO DE LA BÚSQUEDA -->
+    <div id="seguimiento-resultado"
+         class="seguimiento-resultado"
+         hidden>
+
+      <div class="seguimiento-encabezado">
+        <div>
+          <span class="seguimiento-etiqueta">
+            — TU MOTOCICLETA
+          </span>
+
+          <h2 id="moto-titulo"></h2>
+          <p id="moto-subtitulo"></p>
+        </div>
+
+        <span id="moto-estado" class="estado-publico"></span>
+      </div>
+
+      <div class="seguimiento-columnas">
+        <div class="seguimiento-izquierda">
+
+          <article class="publico-panel foto-publica-panel">
+            <div id="moto-foto"
+                 class="moto-foto-publica"></div>
+
+            <div class="foto-publica-detalles">
+              <span id="moto-estado-texto"
+                    class="texto-estado-publico"></span>
+
+              <h3 id="moto-mensaje-estado"></h3>
+              <p id="moto-descripcion-estado"></p>
+            </div>
+          </article>
+
+          <article class="publico-panel">
+            <h3>DETALLES DE TU MOTO</h3>
+            <div id="moto-datos"></div>
+          </article>
+
+          <article class="publico-panel">
+            <h3>REPUESTOS AGREGADOS</h3>
+            <div id="moto-repuestos"></div>
+          </article>
+
+          <article class="publico-panel aviso-entrega"
+                   id="aviso-moto-lista" hidden>
+            <h3>✓ ¡MOTO LISTA PARA ENTREGA!</h3>
+            <p>
+              Tu reparación está finalizada.
+              Comunícate con el taller para coordinar
+              la entrega y solicitar tu comprobante.
+            </p>
+            <a href="#contacto" class="btn-principal">
+              Contactar al taller
+            </a>
+          </article>
+        </div>
+
+        <div class="seguimiento-derecha">
+          <article class="publico-panel historial-publico">
+            <h3>HISTORIAL DEL SERVICIO</h3>
+            <div id="moto-historial"></div>
+          </article>
+        </div>
+      </div>
+
+      <p class="seguimiento-nota">
+        🔄 El seguimiento se actualiza automáticamente
+        mientras esta página esté abierta.
+        Solo se muestra información pública del servicio.
+      </p>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="seccion fondo-alterno">
+    <div class="titulo-seccion">
+      <span>CONTÁCTANOS</span>
+      <h2>Visítanos</h2>
+      <p>
+        Estamos para ayudarte con tu motocicleta.
+      </p>
+    </div>
+
+    <div class="contacto-contenido">
+      <div class="contacto-info">
+        <h3>🏍️ Taller Luigi Biker</h3>
+        <p>📍 Ubicación: Próximamente</p>
+        <p>📱 Celular: Próximamente</p>
+        <p>🕒 Horarios: Próximamente</p>
+
+        <div class="redes">
+          <span>Facebook</span>
+          <span>TikTok</span>
+          <span>WhatsApp</span>
+        </div>
+      </div>
+
+      <div class="contacto-mapa">
+        <h3>📍 Nuestra ubicación</h3>
+        <p>
+          Aquí agregaremos el mapa de Google Maps
+          y la fotografía real del taller.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <h3>🏍️ TALLER LUIGI BIKER</h3>
+    <p>
+      Pasión por las motos, calidad en cada reparación.
+    </p>
+    <p>
+      © 2026 Taller Luigi Biker.
+      Todos los derechos reservados.
+    </p>
+  </footer>
+</body>
+</html>

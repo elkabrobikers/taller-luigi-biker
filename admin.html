@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Administrador | Taller Luigi Biker</title>
+
+  <link rel="stylesheet" href="css/admin.css?v=2">
+
+  <style>
+    [hidden] {
+      display: none !important;
+    }
+
+    .acciones-modulo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-modulo {
+      display: inline-block;
+      padding: 13px 16px;
+      background: #ff6b00;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .btn-modulo:hover {
+      background: #e65c00;
+    }
+
+    .btn-modulo.secundario {
+      background: #34343c;
+      border: 1px solid #555;
+    }
+
+    .cabecera-resumen {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .cabecera-resumen h2 {
+      margin: 0;
+    }
+
+    .btn-actualizar {
+      padding: 11px 15px;
+      border: 1px solid #ff7900;
+      border-radius: 8px;
+      background: #32251b;
+      color: #ffae67;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-actualizar:hover {
+      background: #4a3020;
+    }
+
+    .btn-actualizar:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .mensaje-estadisticas {
+      margin: 12px 0 20px;
+      color: #ffae67;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .estadisticas .tarjeta h3 {
+      font-size: 32px;
+      margin: 12px 0 8px;
+      color: #ff7900;
+    }
+
+    .estadisticas .tarjeta small {
+      color: #aaaab5;
+      font-size: 12px;
+    }
+
+    .estadisticas .tarjeta .icono {
+      font-size: 28px;
+    }
+  </style>
+
+  <script type="module" src="js/admin.js?v=2"></script>
+</head>
+
+<body>
+
+  <div id="cargando" class="cargando">
+    Verificando acceso al administrador...
+  </div>
+
+  <div id="dashboard" class="dashboard" hidden>
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>🏍️ LUIGI <span>BIKER</span></h2>
+        <p>Administración del taller</p>
+      </div>
+
+      <nav>
+        <a href="admin.html" class="activo">
+          🏠 Inicio
+        </a>
+
+        <a href="lista-motos.html">
+          🏍️ Motocicletas
+        </a>
+
+        <a href="reparaciones.html">
+          🔧 Reparaciones
+        </a>
+
+        <a href="mecanicos.html">
+          👨‍🔧 Mecánicos
+        </a>
+
+        <a href="clientes.html">
+          👥 Clientes
+        </a>
+
+        <a href="inventario.html">
+          ⚙️ Repuestos e inventario
+        </a>
+
+        <a href="ventas.html">
+          🛒 Ventas
+        </a>
+
+        <a href="#modulos">
+          📄 Facturas
+        </a>
+      </nav>
+
+      <button id="cerrar-sesion" type="button">
+        Cerrar sesión
+      </button>
+
+    </aside>
+
+    <main class="contenido">
+
+      <header>
+        <div>
+          <p class="etiqueta">PANEL DE CONTROL</p>
+
+          <h1>Bienvenido, administrador</h1>
+
+          <p class="descripcion">
+            Gestiona todas las operaciones de tu taller
+            desde un solo lugar.
+          </p>
+        </div>
+
+        <div class="usuario">
+          <div class="avatar">A</div>
+
+          <strong id="nombre-admin">
+            Administrador
+          </strong>
+        </div>
+      </header>
+
+      <!-- ESTADÍSTICAS -->
+      <section>
+
+        <div class="cabecera-resumen">
+          <h2>Resumen del taller</h2>
+
+          <button
+            id="actualizar-estadisticas"
+            class="btn-actualizar"
+            type="button"
+          >
+            ↻ Actualizar datos
+          </button>
+        </div>
+
+        <p
+          id="mensaje-estadisticas"
+          class="mensaje-estadisticas"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <div class="estadisticas">
+
+          <article class="tarjeta">
+            <div class="icono">🏍️</div>
+
+            <p>Motocicletas registradas</p>
+
+            <h3 id="total-motos">—</h3>
+
+            <small id="detalle-motos">
+              Consultando Supabase...
+            </small>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">🔧</div>
+
+            <p>Reparaciones pendientes</p>
+
+            <h3 id="total-reparaciones">—</h3>
+
+            <small id="detalle-reparaciones">
+              Consultando Supabase...
+            </small>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">👨‍🔧</div>
+
+            <p>Mecánicos activos</p>
+
+            <h3 id="total-mecanicos">—</h3>
+
+            <small id="detalle-mecanicos">
+              Consultando Supabase...
+            </small>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">💰</div>
+
+            <p>Ventas registradas</p>
+
+            <h3 id="total-ventas">—</h3>
+
+            <small id="detalle-ventas">
+              Consultando Supabase...
+            </small>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- MÓDULOS -->
+      <section id="modulos">
+
+        <h2>Gestión del taller</h2>
+
+        <div class="modulos">
+
+          <article class="tarjeta">
+            <div class="icono">🏍️</div>
+            <h3>Motocicletas</h3>
+
+            <p>
+              Registrar motos, propietarios
+              y fotografías.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="motos.html" class="btn-modulo">
+                + Registrar motocicleta
+              </a>
+
+              <a
+                href="lista-motos.html"
+                class="btn-modulo secundario"
+              >
+                Ver motocicletas
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">🔧</div>
+            <h3>Reparaciones</h3>
+
+            <p>
+              Crear órdenes y controlar
+              los estados de reparación.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="reparaciones.html" class="btn-modulo">
+                Gestionar reparaciones
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">👨‍🔧</div>
+            <h3>Mecánicos</h3>
+
+            <p>
+              Administrar cuentas y
+              mecánicos del taller.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="mecanicos.html" class="btn-modulo">
+                Gestionar mecánicos
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">👥</div>
+            <h3>Clientes</h3>
+
+            <p>
+              Consultar cuentas de clientes,
+              buscar motocicletas por placa
+              y vincularlas con sus propietarios.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="clientes.html" class="btn-modulo">
+                Gestionar clientes
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">⚙️</div>
+            <h3>Inventario</h3>
+
+            <p>
+              Repuestos, accesorios,
+              fotografías, precios y stock.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="inventario.html" class="btn-modulo">
+                Gestionar inventario
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">🛒</div>
+            <h3>Ventas</h3>
+
+            <p>
+              Registrar ventas, calcular totales
+              y descontar stock automáticamente.
+            </p>
+
+            <div class="acciones-modulo">
+              <a href="ventas.html" class="btn-modulo">
+                Registrar venta
+              </a>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="icono">📄</div>
+            <h3>Facturas</h3>
+
+            <p>
+              Generar comprobantes
+              y documentos PDF.
+            </p>
+
+            <span>Próximamente</span>
+          </article>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

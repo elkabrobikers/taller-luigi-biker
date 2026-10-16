@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motocicletas | Taller Luigi Biker</title>
+  <link rel="stylesheet" href="./css/lista-motos.css?v=7">
+  <script type="module" src="./js/lista-motos.js?v=7"></script>
+</head>
+<body>
+
+  <div id="verificando" class="verificando">
+    Verificando acceso...
+  </div>
+
+  <main id="contenido" class="contenedor" hidden>
+
+    <a href="./admin.html" class="volver">
+      ← Volver al administrador
+    </a>
+
+    <header class="encabezado">
+      <div>
+        <span class="etiqueta">🏍️ TALLER LUIGI BIKER</span>
+        <h1>Motocicletas registradas</h1>
+        <p>
+          Consulta las motos del taller y elimina individualmente
+          los registros que ya no necesitas.
+        </p>
+      </div>
+
+      <a href="./registro-moto.html" class="btn-nuevo">
+        + Registrar motocicleta
+      </a>
+    </header>
+
+    <section class="barra-herramientas">
+      <div class="buscador">
+        <label for="buscar">Buscar motocicleta</label>
+        <input
+          id="buscar"
+          type="search"
+          placeholder="Placa, marca, modelo o propietario"
+        >
+      </div>
+
+      <button id="actualizar" type="button">
+        ↻ Actualizar
+      </button>
+    </section>
+
+    <p id="mensaje" role="status"></p>
+
+    <section id="lista" class="lista-motos"></section>
+
+  </main>
+
+</body>
+</html>

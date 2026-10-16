@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Clientes | Taller Luigi Biker</title>
+
+  <link rel="stylesheet" href="./css/clientes.css?v=7">
+  <link rel="stylesheet" href="./css/registro.css?v=7">
+  <link rel="stylesheet" href="./css/clientes-eliminar.css?v=7">
+
+  <script type="module" src="./js/clientes.js?v=7"></script>
+</head>
+<body>
+
+  <div id="cargando" class="cargando">
+    Verificando acceso...
+  </div>
+
+  <div id="app" hidden>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>🏍️ LUIGI <span>BIKER</span></h2>
+        <p>Administración del taller</p>
+      </div>
+
+      <nav>
+        <a href="./admin.html">🏠 Inicio</a>
+        <a href="./lista-motos.html">🏍️ Motocicletas</a>
+        <a href="./reparaciones.html">🔧 Reparaciones</a>
+        <a href="./mecanicos.html">👨‍🔧 Mecánicos</a>
+        <a href="./clientes.html" class="activo">👥 Clientes</a>
+        <a href="./inventario.html">⚙️ Inventario</a>
+        <a href="./ventas.html">🛒 Ventas</a>
+      </nav>
+
+      <button id="salir" class="btn-salir">
+        Cerrar sesión
+      </button>
+    </aside>
+
+    <main class="contenido">
+
+      <header>
+        <div>
+          <p class="etiqueta">ADMINISTRACIÓN</p>
+          <h1>Gestión de clientes</h1>
+          <p class="descripcion">
+            Registra, consulta y elimina clientes,
+            y vincula sus motocicletas.
+          </p>
+        </div>
+
+        <a class="btn-volver" href="./admin.html">
+          ← Volver al panel
+        </a>
+      </header>
+
+      <section class="tarjeta registro-clientes">
+        <h2>➕ Registrar nuevo cliente</h2>
+
+        <form id="form-registro" class="registro-form">
+          <div class="registro-grid">
+
+            <label>
+              Nombre completo
+              <input name="nombre" required maxlength="100"
+                     placeholder="Juan Pérez">
+            </label>
+
+            <label>
+              Nombre de usuario
+              <input name="usuario" required minlength="3"
+                     maxlength="30"
+                     pattern="[a-zA-Z0-9_]+"
+                     placeholder="juan123">
+            </label>
+
+            <label>
+              Correo electrónico
+              <input name="email" type="email" required
+                     placeholder="juan@ejemplo.com">
+            </label>
+
+            <label>
+              Celular
+              <input name="celular" type="tel"
+                     maxlength="30"
+                     placeholder="70000000">
+            </label>
+
+            <label>
+              Contraseña inicial
+              <input name="password" type="password"
+                     required minlength="8"
+                     autocomplete="new-password">
+            </label>
+
+            <label>
+              Confirmar contraseña
+              <input name="confirmar" type="password"
+                     required minlength="8"
+                     autocomplete="new-password">
+            </label>
+
+          </div>
+
+          <button id="crear-cuenta" type="submit">
+            Crear cuenta de cliente
+          </button>
+
+          <p id="mensaje-registro" role="status"></p>
+        </form>
+
+        <p class="nota-registro">
+          El cliente iniciará sesión con su correo y contraseña.
+        </p>
+      </section>
+
+      <section class="tarjeta">
+        <h2>👥 Clientes registrados</h2>
+
+        <p>
+          Selecciona el cliente que deseas eliminar.
+          Los clientes con motocicletas vinculadas no se pueden
+          eliminar hasta desvincularlas.
+        </p>
+
+        <div class="herramientas-clientes">
+          <input
+            id="buscar-lista-clientes"
+            type="search"
+            placeholder="Buscar por nombre o celular"
+          >
+
+          <button id="actualizar-clientes"
+                  type="button"
+                  class="btn-secundario">
+            ↻ Actualizar clientes
+          </button>
+        </div>
+
+        <p id="mensaje-lista-clientes" role="status"></p>
+
+        <div id="lista-clientes" class="lista-clientes"></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>1. Seleccionar cliente</h2>
+
+        <p>Selecciona la cuenta del propietario.</p>
+
+        <label for="buscar-cliente">Buscar cliente</label>
+        <input id="buscar-cliente" type="search"
+               placeholder="Nombre o celular">
+
+        <label for="cliente">Cuenta del cliente</label>
+
+        <select id="cliente">
+          <option value="">Selecciona un cliente</option>
+        </select>
+
+        <div id="datos-cliente"
+             class="detalle"
+             hidden></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>2. Buscar motocicleta</h2>
+
+        <p>
+          Verifica que la motocicleta realmente pertenezca
+          al cliente antes de vincularla.
+        </p>
+
+        <form id="form-buscar-moto" class="form-busqueda">
+          <input id="placa" type="text" maxlength="20"
+                 placeholder="Placa de la motocicleta"
+                 required>
+
+          <button id="btn-buscar" type="submit">
+            Buscar moto
+          </button>
+        </form>
+
+        <div id="resultado-moto"></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>3. Motocicletas vinculadas</h2>
+
+        <button id="actualizar"
+                type="button"
+                class="btn-secundario">
+          🔄 Actualizar listado
+        </button>
+
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Motocicleta</th>
+                <th>Propietario registrado</th>
+                <th>Cuenta vinculada</th>
+              </tr>
+            </thead>
+
+            <tbody id="tabla-motos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="mensaje" class="mensaje" role="status"></p>
+
+    </main>
+  </div>
+</body>
+</html>

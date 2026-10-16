@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel Mecánico | Taller Luigi Biker</title>
+  <link rel="stylesheet" href="./css/mecanico-panel.css">
+</head>
+<body>
+  <div id="verificando" class="verificando">
+    Verificando acceso del mecánico...
+  </div>
+
+  <div id="panel" hidden>
+    <header class="cabecera">
+      <div>
+        <h1>🏍️ Taller Luigi Biker</h1>
+        <p>Panel de gestión del mecánico</p>
+      </div>
+      <div class="cabecera-derecha">
+        <span>Bienvenido, <b id="nombre-mecanico">Mecánico</b></span>
+        <button id="cerrar-sesion" type="button" class="secundario">
+          Cerrar sesión
+        </button>
+      </div>
+    </header>
+
+    <main class="contenedor">
+      <section class="estadisticas">
+        <div class="estadistica">
+          <span>Trabajos registrados</span>
+          <strong id="total-trabajos">0</strong>
+        </div>
+        <div class="estadistica">
+          <span>Trabajos pendientes</span>
+          <strong id="trabajos-pendientes">0</strong>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>🏍️ Registrar motocicleta</h2>
+        <p class="ayuda">Registra una moto antes de asignarle trabajos.</p>
+
+        <form id="form-moto-mecanico">
+          <div class="cuadricula">
+            <div class="campo">
+              <label for="moto-placa">Placa *</label>
+              <input id="moto-placa" required placeholder="1234ABC">
+            </div>
+            <div class="campo">
+              <label for="moto-marca">Marca *</label>
+              <input id="moto-marca" required placeholder="Honda">
+            </div>
+            <div class="campo">
+              <label for="moto-modelo">Modelo</label>
+              <input id="moto-modelo" placeholder="CB 190R">
+            </div>
+            <div class="campo">
+              <label for="moto-color">Color</label>
+              <input id="moto-color" placeholder="Negro">
+            </div>
+            <div class="campo">
+              <label for="moto-propietario">Propietario *</label>
+              <input id="moto-propietario" required>
+            </div>
+            <div class="campo">
+              <label for="moto-celular">Celular *</label>
+              <input id="moto-celular" type="tel" required>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="moto-observaciones">Observaciones</label>
+            <textarea id="moto-observaciones" rows="3"
+              placeholder="Estado de la motocicleta al ingresar"></textarea>
+          </div>
+
+          <div class="campo">
+            <label for="moto-foto">Fotografía de la moto</label>
+            <input id="moto-foto" type="file"
+              accept="image/jpeg,image/png,image/webp">
+            <small>JPG, PNG o WebP. Máximo 5 MB.</small>
+            <img id="moto-vista-foto" class="vista-foto"
+              alt="Vista previa de la motocicleta" hidden>
+          </div>
+
+          <button id="guardar-moto" type="submit">
+            💾 Guardar motocicleta
+          </button>
+          <p id="mensaje-moto" class="mensaje" role="status"></p>
+        </form>
+      </section>
+
+      <section class="tarjeta">
+        <h2>🔧 Agregar trabajo a la moto</h2>
+        <p class="ayuda">Registra la descripción, los repuestos y la mano de obra.</p>
+
+        <form id="form-reparacion-mecanico">
+          <div class="cuadricula">
+            <div class="campo">
+              <label for="reparacion-moto">Motocicleta *</label>
+              <select id="reparacion-moto" required>
+                <option value="">Cargando motos...</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="reparacion-tipo">Tipo de trabajo *</label>
+              <select id="reparacion-tipo" required>
+                <option value="">Selecciona un tipo</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Reparación">Reparación</option>
+                <option value="Diagnóstico">Diagnóstico</option>
+                <option value="Motor">Motor</option>
+                <option value="Frenos">Frenos</option>
+                <option value="Electricidad">Electricidad</option>
+                <option value="Cambio de repuestos">Cambio de repuestos</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="reparacion-descripcion">Descripción del trabajo *</label>
+            <textarea id="reparacion-descripcion" rows="4" required
+              placeholder="Ej.: Cambio de aceite y revisión de frenos"></textarea>
+          </div>
+
+          <div class="subseccion">
+            <h3>🧰 Repuestos y precios</h3>
+            <p class="ayuda">Agrega todos los repuestos que necesites.</p>
+
+            <div class="cuadricula repuestos-campos">
+              <div class="campo">
+                <label for="repuesto-nombre">Nombre o descripción</label>
+                <input id="repuesto-nombre" placeholder="Filtro de aceite">
+              </div>
+              <div class="campo">
+                <label for="repuesto-cantidad">Cantidad</label>
+                <input id="repuesto-cantidad" type="number"
+                  min="1" step="1" value="1">
+              </div>
+              <div class="campo">
+                <label for="repuesto-precio">Precio unitario (Bs.)</label>
+                <input id="repuesto-precio" type="number"
+                  min="0" step="0.01" placeholder="45.00">
+              </div>
+            </div>
+
+            <button id="agregar-repuesto" type="button" class="secundario">
+              ➕ Agregar repuesto
+            </button>
+            <div id="lista-repuestos" class="lista-repuestos"></div>
+          </div>
+
+          <div class="subseccion">
+            <h3>👨‍🔧 Mano de obra</h3>
+            <label class="opcion-mano-obra" for="incluir-mano-obra">
+              <input id="incluir-mano-obra" type="checkbox">
+              Incluir cobro de mano de obra
+            </label>
+
+            <div id="contenedor-mano-obra" class="campo" hidden>
+              <label for="reparacion-costo">Precio de mano de obra (Bs.)</label>
+              <input id="reparacion-costo" type="number"
+                min="0" step="0.01" placeholder="100.00">
+            </div>
+          </div>
+
+          <div class="detalle-costos">
+            <h3>💰 Total del trabajo</h3>
+            <div class="fila-total">
+              <span>Repuestos</span>
+              <strong id="total-repuestos">Bs. 0.00</strong>
+            </div>
+            <div id="fila-mano-obra" class="fila-total" hidden>
+              <span>Mano de obra</span>
+              <strong id="total-mano-obra">Bs. 0.00</strong>
+            </div>
+            <div class="fila-total total-general">
+              <span>Total estimado</span>
+              <strong id="total-estimado">Bs. 0.00</strong>
+            </div>
+          </div>
+
+          <button id="guardar-reparacion" type="submit">
+            ➕ Agregar trabajo a la moto
+          </button>
+          <p id="mensaje-reparacion" class="mensaje" role="status"></p>
+        </form>
+      </section>
+
+      <section class="tarjeta">
+        <div class="titulo-listado">
+          <div>
+            <h2>📋 Mis trabajos registrados</h2>
+            <p class="ayuda">
+              Consulta, finaliza, descarga comprobantes o elimina trabajos.
+            </p>
+          </div>
+          <button id="actualizar" type="button" class="secundario">
+            🔄 Actualizar
+          </button>
+        </div>
+
+        <p id="mensaje" class="mensaje" role="status"></p>
+        <div id="lista-reparaciones" class="lista-reparaciones">
+          <p>Cargando trabajos...</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      Taller Luigi Biker · Panel de mecánicos
+    </footer>
+  </div>
+
+  <script type="module" src="./js/mecanico-panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+
+/* ==========================================
+   TALLER LUIGI BIKER
+   BOTONES DE ELIMINACIÓN
+   ========================================== */
+
+.btn-eliminar,
+.btn-eliminar-cliente {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #8b2028;
+  color: #ffffff;
+  border: 1px solid #d64a55;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-eliminar:hover:not(:disabled),
+.btn-eliminar-cliente:hover:not(:disabled) {
+  background: #c82f3d;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-eliminar:disabled,
+.btn-eliminar-cliente:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.acciones-eliminar {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #393940;
+}
+
+.resultado-eliminar {
+  margin: 10px 0;
+  color: #ffb3b3;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+#datos-cliente .btn-eliminar-cliente {
+  margin-top: 14px;
+}
+
+.mecanico .acciones .btn-eliminar {
+  background: #8b2028;
+  color: #ffffff;
+}
+
+.mecanico .acciones .btn-eliminar:hover:not(:disabled) {
+  background: #c82f3d;
+}
+
+@media (max-width: 650px) {
+  .acciones-eliminar .btn-eliminar {
+    width: 100%;
+  }
+
+  .mecanico .acciones .btn-eliminar {
+    width: 100%;
+  }
+
+  #datos-cliente .btn-eliminar-cliente {
+    width: 100%;
+  }
+}

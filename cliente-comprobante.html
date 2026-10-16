@@ -1,0 +1,1217 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Comprobante de reparación | Taller Luigi Biker</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --fondo: #101013;
+      --panel: #1e1e24;
+      --panel2: #292930;
+      --naranja: #ff7900;
+      --naranja-claro: #ffb16b;
+      --blanco: #f8f8fa;
+      --gris: #aaaab5;
+      --borde: #414149;
+      --verde: #59d99b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px 18px 60px;
+      background: var(--fondo);
+      color: var(--blanco);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .acciones {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .acciones p {
+      color: var(--gris);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .botones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .boton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      background: #32323a;
+      color: white;
+      text-decoration: none;
+      padding: 12px 17px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .boton-principal {
+      background: var(--naranja);
+      border-color: var(--naranja);
+      color: #171717;
+    }
+
+    .boton-principal:hover {
+      background: #ffa13f;
+    }
+
+    .comprobante {
+      background: var(--panel);
+      border: 1px solid var(--borde);
+      border-top: 6px solid var(--naranja);
+      border-radius: 13px;
+      overflow: hidden;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .22);
+    }
+
+    .cabecera-documento {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 32px;
+      background: linear-gradient(
+        120deg,
+        #29231f,
+        #1e1e24 70%
+      );
+      border-bottom: 1px solid var(--borde);
+    }
+
+    .marca {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .marca-icono {
+      display: grid;
+      place-items: center;
+      width: 57px;
+      height: 57px;
+      border: 1px solid #71431f;
+      border-radius: 13px;
+      background: #38281d;
+      font-size: 30px;
+    }
+
+    .marca h1 {
+      font-size: 25px;
+      line-height: 1.1;
+      margin: 0 0 7px;
+      letter-spacing: -.5px;
+    }
+
+    .marca h1 span {
+      color: var(--naranja);
+    }
+
+    .marca p {
+      margin: 0;
+      color: var(--gris);
+      font-size: 12px;
+    }
+
+    .sello {
+      display: inline-block;
+      padding: 10px 13px;
+      background: #1b3a2a;
+      border: 1px solid #327c52;
+      border-radius: 8px;
+      color: #91f3b9;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .contenido-documento {
+      padding: 30px 32px 35px;
+    }
+
+    .titulo-documento {
+      margin-bottom: 25px;
+    }
+
+    .etiqueta {
+      color: var(--naranja);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .titulo-documento h2 {
+      margin: 9px 0;
+      font-size: 27px;
+    }
+
+    .titulo-documento p {
+      color: var(--gris);
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .bloque {
+      margin-top: 25px;
+      padding-top: 23px;
+      border-top: 1px solid var(--borde);
+    }
+
+    .bloque h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      font-size: 17px;
+    }
+
+    .icono-seccion {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      border-radius: 9px;
+      background: #35291f;
+      font-size: 17px;
+    }
+
+    .datos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .campo {
+      min-width: 0;
+      padding: 14px;
+      background: var(--panel2);
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+    }
+
+    .campo span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gris);
+      font-size: 11px;
+    }
+
+    .campo strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .campo.ancho {
+      grid-column: 1 / -1;
+    }
+
+    .tabla-contenedor {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      padding: 13px 12px;
+      background: #303039;
+      color: #eaeaf0;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--borde);
+      color: #e0e0e7;
+      vertical-align: top;
+    }
+
+    td.numero,
+    th.numero {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .tabla-vacia {
+      color: var(--gris);
+      font-style: italic;
+      padding: 16px 0;
+    }
+
+    .resumen-costos {
+      max-width: 420px;
+      margin-left: auto;
+    }
+
+    .fila-costo {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--borde);
+      font-size: 14px;
+    }
+
+    .fila-costo span {
+      color: var(--gris);
+    }
+
+    .fila-costo strong {
+      text-align: right;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 19px 0 0;
+      color: var(--naranja-claro);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .nota-costos {
+      margin: 17px 0 0;
+      color: var(--gris);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .mensaje-entrega {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      margin-top: 30px;
+      padding: 18px;
+      background: #1b3226;
+      border: 1px solid #37734f;
+      border-radius: 9px;
+    }
+
+    .mensaje-entrega .icono {
+      font-size: 24px;
+    }
+
+    .mensaje-entrega strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #9af0bd;
+    }
+
+    .mensaje-entrega p {
+      margin: 0;
+      color: #c6e5d1;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .pie-documento {
+      border-top: 1px solid var(--borde);
+      padding: 20px 32px;
+      color: var(--gris);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .cargando,
+    .error {
+      padding: 25px;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .error {
+      color: #ffb0a6;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px 10px 35px;
+      }
+
+      .cabecera-documento {
+        flex-direction: column;
+        padding: 22px;
+      }
+
+      .contenido-documento {
+        padding: 22px;
+      }
+
+      .datos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .campo.ancho {
+        grid-column: auto;
+      }
+
+      .marca h1 {
+        font-size: 21px;
+      }
+
+      .titulo-documento h2 {
+        font-size: 23px;
+      }
+
+      .total {
+        font-size: 19px;
+      }
+
+      .pie-documento {
+        padding: 18px;
+      }
+    }
+
+    /* ======================================
+       IMPRESIÓN Y GUARDADO EN PDF
+       ====================================== */
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 14mm;
+      }
+
+      :root {
+        color-scheme: light;
+      }
+
+      body {
+        background: #fff !important;
+        color: #111 !important;
+        padding: 0;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .acciones {
+        display: none !important;
+      }
+
+      .contenedor {
+        max-width: none;
+      }
+
+      .comprobante {
+        background: #fff !important;
+        color: #111 !important;
+        box-shadow: none;
+        border: none;
+        border-top: 4px solid #ff7900;
+        border-radius: 0;
+      }
+
+      .cabecera-documento {
+        background: #fff !important;
+        border-bottom: 1px solid #ccc;
+        padding: 14px 0 20px;
+      }
+
+      .marca h1 {
+        color: #111;
+      }
+
+      .marca p,
+      .titulo-documento p,
+      .campo span,
+      .fila-costo span,
+      .nota-costos,
+      .pie-documento {
+        color: #555 !important;
+      }
+
+      .marca-icono,
+      .icono-seccion {
+        background: #fff !important;
+        border-color: #ccc;
+      }
+
+      .sello {
+        background: #fff !important;
+        color: #197346 !important;
+        border-color: #197346;
+      }
+
+      .contenido-documento {
+        padding: 18px 0 20px;
+      }
+
+      .titulo-documento h2,
+      .bloque h3,
+      .campo strong,
+      .fila-costo strong {
+        color: #111 !important;
+      }
+
+      .bloque {
+        border-color: #ccc;
+        margin-top: 17px;
+        padding-top: 15px;
+        break-inside: avoid;
+      }
+
+      .campo {
+        background: #fff !important;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+
+      .datos-grid {
+        gap: 9px;
+      }
+
+      th {
+        background: #eee !important;
+        color: #111 !important;
+        border-bottom: 1px solid #bbb;
+      }
+
+      td {
+        color: #111 !important;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr {
+        break-inside: avoid;
+      }
+
+      .total {
+        color: #d46600 !important;
+      }
+
+      .mensaje-entrega {
+        background: #fff !important;
+        border: 1px solid #aaa;
+        padding: 12px;
+        break-inside: avoid;
+      }
+
+      .mensaje-entrega strong,
+      .mensaje-entrega p {
+        color: #222 !important;
+      }
+
+      .pie-documento {
+        padding: 15px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="contenedor">
+
+    <!-- BOTONES DE ACCIÓN -->
+    <div id="acciones" class="acciones" hidden>
+      <p>Comprobante de servicio · Taller Luigi Biker</p>
+
+      <div class="botones">
+        <a class="boton" href="./cliente-panel.html">
+          ← Volver al panel
+        </a>
+
+        <button
+          id="imprimir"
+          class="boton boton-principal"
+          type="button"
+        >
+          📄 Imprimir / Guardar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- COMPROBANTE -->
+    <main class="comprobante">
+
+      <header class="cabecera-documento">
+        <div class="marca">
+          <div class="marca-icono">🏍️</div>
+
+          <div>
+            <h1>TALLER <span>LUIGI BIKER</span></h1>
+            <p>Servicio y reparación de motocicletas</p>
+          </div>
+        </div>
+
+        <div class="sello">
+          ✓ REPARACIÓN FINALIZADA
+        </div>
+      </header>
+
+      <div class="contenido-documento">
+
+        <div class="titulo-documento">
+          <span class="etiqueta">COMPROBANTE DE SERVICIO</span>
+          <h2>Detalle de reparación</h2>
+          <p>
+            Resumen del trabajo realizado en tu motocicleta.
+          </p>
+        </div>
+
+        <div id="contenido">
+          <p class="cargando">
+            Consultando los datos del comprobante...
+          </p>
+        </div>
+
+      </div>
+
+      <footer class="pie-documento">
+        Taller Luigi Biker · Pasión por las motocicletas
+        <br>
+        Documento informativo generado a partir
+        de los registros del taller.
+      </footer>
+
+    </main>
+
+  </div>
+
+  <script type="module">
+    import { supabase } from "./js/supabase.js";
+
+    const $ = id => document.getElementById(id);
+
+    const dinero = valor =>
+      "Bs. " + Number(valor || 0).toFixed(2);
+
+    function nodo(tipo, texto = "", clase = "") {
+      const elemento = document.createElement(tipo);
+
+      elemento.textContent = String(texto ?? "");
+
+      if (clase) {
+        elemento.className = clase;
+      }
+
+      return elemento;
+    }
+
+    function fecha(valor) {
+      if (!valor) return "No registrada";
+
+      const d = new Date(valor);
+
+      return Number.isNaN(d.getTime())
+        ? "No registrada"
+        : d.toLocaleString("es-BO");
+    }
+
+    function campo(destino, titulo, valor, ancho = false) {
+      const elemento = nodo(
+        "div",
+        "",
+        ancho ? "campo ancho" : "campo"
+      );
+
+      elemento.append(
+        nodo("span", titulo),
+        nodo("strong", valor ?? "No registrado")
+      );
+
+      destino.appendChild(elemento);
+    }
+
+    function crearSeccion(titulo, icono) {
+      const seccion = nodo("section", "", "bloque");
+
+      const encabezado = nodo("h3");
+
+      encabezado.append(
+        nodo("span", icono, "icono-seccion"),
+        document.createTextNode(titulo)
+      );
+
+      seccion.appendChild(encabezado);
+
+      $("contenido").appendChild(seccion);
+
+      return seccion;
+    }
+
+    function filaCosto(destino, titulo, valor) {
+      const fila = nodo("div", "", "fila-costo");
+
+      fila.append(
+        nodo("span", titulo),
+        nodo("strong", valor)
+      );
+
+      destino.appendChild(fila);
+    }
+
+    $("imprimir").addEventListener("click", () => {
+      window.print();
+    });
+
+    async function iniciar() {
+      try {
+        // ==================================
+        // VALIDAR NÚMERO DE REPARACIÓN
+        // ==================================
+
+        const id = new URLSearchParams(
+          location.search
+        ).get("id");
+
+        if (!id || !/^\d+$/.test(id)) {
+          throw new Error(
+            "El número de reparación no es válido."
+          );
+        }
+
+        // ==================================
+        // VALIDAR SESIÓN DEL CLIENTE
+        // ==================================
+
+        const {
+          data: sesion,
+          error: errorSesion
+        } = await supabase.auth.getUser();
+
+        if (errorSesion || !sesion.user) {
+          throw new Error(
+            "Debes iniciar sesión para ver el comprobante."
+          );
+        }
+
+        const {
+          data: perfil,
+          error: errorPerfil
+        } = await supabase
+          .from("perfiles")
+          .select("rol,activo")
+          .eq("id", sesion.user.id)
+          .single();
+
+        if (errorPerfil) throw errorPerfil;
+
+        if (
+          !perfil ||
+          perfil.rol !== "cliente" ||
+          !perfil.activo
+        ) {
+          throw new Error(
+            "Tu cuenta no tiene acceso a este comprobante."
+          );
+        }
+
+        // ==================================
+        // CONSULTAR REPARACIÓN
+        // ==================================
+
+        const {
+          data: trabajo,
+          error: errorTrabajo
+        } = await supabase
+          .from("reparaciones")
+          .select(
+            "id,moto_id,descripcion,diagnostico,estado," +
+            "fecha_ingreso,fecha_entrega,costo_mano_obra," +
+            "mostrar_mano_obra"
+          )
+          .eq("id", id)
+          .single();
+
+        if (errorTrabajo) throw errorTrabajo;
+
+        if (!trabajo) {
+          throw new Error(
+            "No encontramos la reparación solicitada."
+          );
+        }
+
+        // ==================================
+        // VERIFICAR PROPIETARIO
+        // ==================================
+
+        const {
+          data: moto,
+          error: errorMoto
+        } = await supabase
+          .from("motocicletas")
+          .select(
+            "placa,marca,modelo,color,propietario_id"
+          )
+          .eq("id", trabajo.moto_id)
+          .eq("propietario_id", sesion.user.id)
+          .single();
+
+        if (errorMoto || !moto) {
+          throw new Error(
+            "Esta reparación no está vinculada a tu cuenta."
+          );
+        }
+
+        // ==================================
+        // VALIDAR REPARACIÓN FINALIZADA
+        // ==================================
+
+        if (trabajo.estado !== "finalizada") {
+          throw new Error(
+            "El comprobante estará disponible cuando " +
+            "la reparación esté finalizada."
+          );
+        }
+
+        // ==================================
+        // CONSULTAR REPUESTOS
+        // ==================================
+
+        const {
+          data: repuestos,
+          error: errorRepuestos
+        } = await supabase
+          .from("repuestos_trabajo_mecanico")
+          .select(
+            "nombre,cantidad,precio_unitario"
+          )
+          .eq("reparacion_id", trabajo.id);
+
+        if (errorRepuestos) throw errorRepuestos;
+
+        // ==================================
+        // CONSULTAR AVANCES
+        // ==================================
+
+        const {
+          data: avances,
+          error: errorAvances
+        } = await supabase
+          .from("avances_reparacion")
+          .select("descripcion,creado_en")
+          .eq("reparacion_id", trabajo.id)
+          .order("creado_en", {
+            ascending: true
+          });
+
+        if (errorAvances) throw errorAvances;
+
+        // ==================================
+        // GENERAR COMPROBANTE
+        // ==================================
+
+        $("contenido").replaceChildren();
+
+        // DATOS DE LA MOTOCICLETA
+
+        const seccionMoto = crearSeccion(
+          "Datos de la motocicleta",
+          "🏍️"
+        );
+
+        const datosMoto = nodo(
+          "div",
+          "",
+          "datos-grid"
+        );
+
+        campo(
+          datosMoto,
+          "Número de trabajo",
+          "#" + trabajo.id
+        );
+
+        campo(
+          datosMoto,
+          "Estado",
+          "Reparación finalizada"
+        );
+
+        campo(
+          datosMoto,
+          "Placa",
+          moto.placa
+        );
+
+        campo(
+          datosMoto,
+          "Marca",
+          moto.marca
+        );
+
+        campo(
+          datosMoto,
+          "Modelo",
+          moto.modelo
+        );
+
+        campo(
+          datosMoto,
+          "Color",
+          moto.color
+        );
+
+        campo(
+          datosMoto,
+          "Fecha de ingreso",
+          fecha(trabajo.fecha_ingreso)
+        );
+
+        campo(
+          datosMoto,
+          "Fecha de finalización",
+          fecha(trabajo.fecha_entrega)
+        );
+
+        seccionMoto.appendChild(datosMoto);
+
+        // TRABAJO REALIZADO
+
+        const seccionTrabajo = crearSeccion(
+          "Trabajo realizado",
+          "🔧"
+        );
+
+        const datosTrabajo = nodo(
+          "div",
+          "",
+          "datos-grid"
+        );
+
+        campo(
+          datosTrabajo,
+          "Descripción del trabajo",
+          trabajo.descripcion || "No registrada",
+          true
+        );
+
+        if (trabajo.diagnostico) {
+          campo(
+            datosTrabajo,
+            "Diagnóstico",
+            trabajo.diagnostico,
+            true
+          );
+        }
+
+        seccionTrabajo.appendChild(datosTrabajo);
+
+        // AVANCES REGISTRADOS
+
+        if (avances?.length) {
+          const seccionAvances = crearSeccion(
+            "Avances registrados",
+            "📋"
+          );
+
+          const tablaAvances = document.createElement(
+            "table"
+          );
+
+          const encabezado = document.createElement(
+            "thead"
+          );
+
+          const filaEncabezado = document.createElement(
+            "tr"
+          );
+
+          ["Fecha", "Trabajo registrado"].forEach(
+            texto => {
+              filaEncabezado.appendChild(
+                nodo("th", texto)
+              );
+            }
+          );
+
+          encabezado.appendChild(filaEncabezado);
+
+          const cuerpo = document.createElement(
+            "tbody"
+          );
+
+          for (const avance of avances) {
+            const fila = document.createElement("tr");
+
+            fila.append(
+              nodo("td", fecha(avance.creado_en)),
+              nodo("td", avance.descripcion)
+            );
+
+            cuerpo.appendChild(fila);
+          }
+
+          tablaAvances.append(
+            encabezado,
+            cuerpo
+          );
+
+          const envoltura = nodo(
+            "div",
+            "",
+            "tabla-contenedor"
+          );
+
+          envoltura.appendChild(tablaAvances);
+          seccionAvances.appendChild(envoltura);
+        }
+
+        // REPUESTOS
+
+        const seccionRepuestos = crearSeccion(
+          "Repuestos utilizados",
+          "⚙️"
+        );
+
+        let totalRepuestos = 0;
+
+        if (!repuestos?.length) {
+          seccionRepuestos.appendChild(
+            nodo(
+              "p",
+              "No se registraron repuestos para este trabajo.",
+              "tabla-vacia"
+            )
+          );
+
+        } else {
+          const envoltura = nodo(
+            "div",
+            "",
+            "tabla-contenedor"
+          );
+
+          const tabla = document.createElement(
+            "table"
+          );
+
+          const encabezado = document.createElement(
+            "thead"
+          );
+
+          const filaEncabezado = document.createElement(
+            "tr"
+          );
+
+          [
+            "Repuesto",
+            "Cantidad",
+            "Precio unitario",
+            "Subtotal"
+          ].forEach((texto, indice) => {
+            filaEncabezado.appendChild(
+              nodo(
+                "th",
+                texto,
+                indice > 0 ? "numero" : ""
+              )
+            );
+          });
+
+          encabezado.appendChild(filaEncabezado);
+
+          const cuerpo = document.createElement(
+            "tbody"
+          );
+
+          for (const repuesto of repuestos) {
+            const cantidad = Number(
+              repuesto.cantidad || 0
+            );
+
+            const precio = Number(
+              repuesto.precio_unitario || 0
+            );
+
+            const subtotal = cantidad * precio;
+
+            totalRepuestos += subtotal;
+
+            const fila = document.createElement("tr");
+
+            fila.append(
+              nodo("td", repuesto.nombre),
+              nodo("td", cantidad, "numero"),
+              nodo("td", dinero(precio), "numero"),
+              nodo("td", dinero(subtotal), "numero")
+            );
+
+            cuerpo.appendChild(fila);
+          }
+
+          tabla.append(encabezado, cuerpo);
+          envoltura.appendChild(tabla);
+
+          seccionRepuestos.appendChild(envoltura);
+        }
+
+        // RESUMEN DE COSTOS
+
+        const seccionCostos = crearSeccion(
+          "Resumen de costos",
+          "💰"
+        );
+
+        const resumen = nodo(
+          "div",
+          "",
+          "resumen-costos"
+        );
+
+        filaCosto(
+          resumen,
+          "Subtotal de repuestos",
+          dinero(totalRepuestos)
+        );
+
+        const mostrarManoObra =
+          trabajo.mostrar_mano_obra === true;
+
+        const manoObra = mostrarManoObra
+          ? Number(trabajo.costo_mano_obra || 0)
+          : 0;
+
+        if (mostrarManoObra) {
+          filaCosto(
+            resumen,
+            "Mano de obra",
+            dinero(manoObra)
+          );
+        }
+
+        const total = nodo(
+          "div",
+          "",
+          "total"
+        );
+
+        total.append(
+          nodo(
+            "span",
+            mostrarManoObra
+              ? "TOTAL REGISTRADO"
+              : "SUBTOTAL REPUESTOS"
+          ),
+          nodo(
+            "strong",
+            dinero(totalRepuestos + manoObra)
+          )
+        );
+
+        resumen.appendChild(total);
+
+        if (!mostrarManoObra) {
+          resumen.appendChild(
+            nodo(
+              "p",
+              "La mano de obra no se incluye en el importe " +
+              "mostrado en este comprobante.",
+              "nota-costos"
+            )
+          );
+        }
+
+        seccionCostos.appendChild(resumen);
+
+        // MENSAJE DE ENTREGA
+
+        const mensaje = nodo(
+          "div",
+          "",
+          "mensaje-entrega"
+        );
+
+        mensaje.appendChild(
+          nodo("div", "✅", "icono")
+        );
+
+        const textoMensaje = nodo("div");
+
+        textoMensaje.append(
+          nodo(
+            "strong",
+            "¡Tu motocicleta está lista!"
+          ),
+          nodo(
+            "p",
+            "La reparación fue marcada como finalizada. " +
+            "Consulta al taller para coordinar la entrega."
+          )
+        );
+
+        mensaje.appendChild(textoMensaje);
+
+        $("contenido").appendChild(mensaje);
+
+        // MOSTRAR BOTONES
+
+        $("acciones").hidden = false;
+
+      } catch (error) {
+        console.error(
+          "Error al cargar comprobante:",
+          error
+        );
+
+        $("contenido").replaceChildren(
+          nodo(
+            "p",
+            "No se pudo mostrar el comprobante: " +
+            error.message,
+            "error"
+          )
+        );
+      }
+    }
+
+    iniciar();
+  </script>
+
+</body>
+</html>

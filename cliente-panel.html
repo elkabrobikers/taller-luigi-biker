@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101013">
+
+  <title>Panel del Cliente | Taller Luigi Biker</title>
+
+  <link rel="stylesheet" href="./css/cliente-panel.css?v=3">
+</head>
+
+<body>
+
+  <div id="cargando" class="cargando">
+    🏍️ Cargando Taller Luigi Biker...
+  </div>
+
+  <div id="app" hidden>
+
+    <!-- ENCABEZADO -->
+    <header class="cabecera">
+
+      <a href="./index.html" class="marca">
+        <span class="marca-icono">🏍️</span>
+        LUIGI <b>BIKER</b>
+      </a>
+
+      <nav class="menu">
+        <button
+          type="button"
+          class="menu-activo"
+          data-seccion="seguimiento"
+        >
+          🏍️ Seguir mi moto
+        </button>
+
+        <button type="button" data-seccion="tienda">
+          🛒 Tienda
+        </button>
+
+        <button type="button" data-seccion="notificaciones">
+          🔔 Avisos
+          <span id="cantidad-avisos" hidden>0</span>
+        </button>
+      </nav>
+
+      <div class="cuenta">
+        <span id="nombre-cliente"></span>
+
+        <button id="salir" class="salir" type="button">
+          Salir
+        </button>
+      </div>
+
+    </header>
+
+    <main>
+
+      <!-- ===================================
+           SEGUIMIENTO DE MOTOCICLETA
+      ==================================== -->
+
+      <section id="seguimiento" class="seccion">
+
+        <div class="intro">
+          <span class="sobrelinea">
+            — TALLER LUIGI BIKER
+          </span>
+
+          <h1>SEGUIMIENTO DE TU MOTO</h1>
+
+          <p>
+            Consulta cómo avanza la reparación de tu motocicleta,
+            revisa los trabajos realizados y conoce cuándo estará lista.
+          </p>
+        </div>
+
+        <!-- BUSCADOR -->
+        <form id="form-buscar" class="buscador">
+
+          <div class="campo-buscar">
+            <label for="placa">
+              PLACA DE TU MOTOCICLETA
+            </label>
+
+            <input
+              id="placa"
+              type="text"
+              placeholder="Ejemplo: 7075UXB"
+              maxlength="20"
+              autocomplete="off"
+              required
+            >
+          </div>
+
+          <button id="btn-buscar" type="submit">
+            🔎 Buscar mi moto
+          </button>
+
+        </form>
+
+        <p
+          id="mensaje-busqueda"
+          class="mensaje"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <!-- RESULTADO -->
+        <div id="resultado" hidden>
+
+          <div class="encabezado-resultado">
+
+            <div>
+              <span class="sobrelinea">
+                — TU MOTOCICLETA
+              </span>
+
+              <h2 id="titulo-moto"></h2>
+              <p id="subtitulo-moto"></p>
+            </div>
+
+            <span id="estado-principal" class="estado"></span>
+
+          </div>
+
+          <!-- PROGRESO DE REPARACIÓN -->
+          <article class="panel progreso-panel">
+
+            <div class="progreso-encabezado">
+
+              <div>
+                <span class="sobrelinea">
+                  ESTADO DEL SERVICIO
+                </span>
+
+                <h3>Progreso de tu reparación</h3>
+              </div>
+
+              <span class="progreso-nota">
+                ● Consulta actualizada
+              </span>
+
+            </div>
+
+            <div class="pasos-progreso">
+
+              <div class="paso-progreso" data-paso="1">
+                <span class="paso-icono">1</span>
+                <strong>Moto recibida</strong>
+                <small>Ingreso al taller</small>
+              </div>
+
+              <div class="paso-progreso" data-paso="2">
+                <span class="paso-icono">2</span>
+                <strong>En reparación</strong>
+                <small>Trabajo del mecánico</small>
+              </div>
+
+              <div class="paso-progreso" data-paso="3">
+                <span class="paso-icono">3</span>
+                <strong>Lista para entrega</strong>
+                <small>Servicio finalizado</small>
+              </div>
+
+            </div>
+
+            <p class="progreso-ayuda">
+              El seguimiento refleja la información registrada
+              por el personal del taller.
+            </p>
+
+          </article>
+
+          <!-- COLUMNAS -->
+          <div class="distribucion">
+
+            <!-- IZQUIERDA -->
+            <div class="columna-izquierda">
+
+              <!-- FOTO -->
+              <article class="panel foto-panel">
+
+                <div
+                  id="contenedor-foto"
+                  class="contenedor-foto"
+                ></div>
+
+                <div class="resumen">
+                  <span
+                    id="estado-resumen"
+                    class="estado-texto"
+                  ></span>
+
+                  <h3 id="titulo-estado"></h3>
+
+                  <p id="descripcion-estado"></p>
+                </div>
+
+              </article>
+
+              <!-- DATOS -->
+              <article class="panel">
+
+                <div class="titulo-panel">
+                  <span class="icono-panel">🏍️</span>
+                  <h3>DETALLES DE TU MOTO</h3>
+                </div>
+
+                <div id="datos-moto"></div>
+
+              </article>
+
+              <!-- REPUESTOS -->
+              <article class="panel">
+
+                <div class="titulo-panel">
+                  <span class="icono-panel">🔧</span>
+                  <h3>REPUESTOS AGREGADOS</h3>
+                </div>
+
+                <div id="lista-repuestos"></div>
+                <div id="resumen-costos"></div>
+
+              </article>
+
+              <!-- COMPROBANTE -->
+              <article
+                id="panel-comprobante"
+                class="panel comprobante"
+                hidden
+              >
+
+                <h3>✅ ¡MOTO LISTA PARA ENTREGA!</h3>
+
+                <p>
+                  Tu reparación ha finalizado.
+                  Puedes consultar el comprobante del servicio.
+                </p>
+
+                <button
+                  id="descargar-pdf"
+                  class="boton-naranja"
+                  type="button"
+                >
+                  📄 Ver comprobante / Guardar PDF
+                </button>
+
+              </article>
+
+            </div>
+
+            <!-- DERECHA -->
+            <div class="columna-derecha">
+
+              <!-- HISTORIAL -->
+              <article class="panel historial-panel">
+
+                <div class="titulo-panel">
+                  <span class="icono-panel">📋</span>
+                  <h3>HISTORIAL DEL SERVICIO</h3>
+                </div>
+
+                <p class="subtitulo-panel">
+                  Revisa los avances que el mecánico ha registrado
+                  durante la reparación.
+                </p>
+
+                <div id="historial"></div>
+
+              </article>
+
+              <!-- AYUDA -->
+              <article class="panel ayuda-panel">
+
+                <div class="titulo-panel">
+                  <span class="icono-panel">ℹ️</span>
+                  <h3>INFORMACIÓN IMPORTANTE</h3>
+                </div>
+
+                <p>
+                  La información de tu motocicleta se actualiza
+                  conforme el taller registra nuevos trabajos.
+                </p>
+
+                <p>
+                  Si aparece como
+                  <strong>Lista para entrega</strong>,
+                  consulta al taller antes de recogerla.
+                </p>
+
+              </article>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================
+           TIENDA
+      ==================================== -->
+
+      <section id="tienda" class="seccion" hidden>
+
+        <div class="intro">
+          <span class="sobrelinea">
+            — TIENDA LUIGI BIKER
+          </span>
+
+          <h1>REPUESTOS Y ACCESORIOS</h1>
+
+          <p>
+            Consulta nuestros productos disponibles,
+            sus fotografías, precios y existencias.
+          </p>
+        </div>
+
+        <div class="filtros">
+
+          <input
+            type="search"
+            id="buscar-producto"
+            placeholder="Buscar producto..."
+          >
+
+          <select id="categoria">
+            <option value="">
+              Todas las categorías
+            </option>
+          </select>
+
+        </div>
+
+        <p id="mensaje-tienda" class="mensaje"></p>
+
+        <div
+          id="productos"
+          class="cuadricula-productos"
+        ></div>
+
+      </section>
+
+      <!-- ===================================
+           AVISOS EXISTENTES
+      ==================================== -->
+
+      <section id="notificaciones" class="seccion" hidden>
+
+        <div class="intro">
+          <span class="sobrelinea">
+            — TALLER LUIGI BIKER
+          </span>
+
+          <h1>AVISOS</h1>
+
+          <p>
+            Consulta los avisos disponibles de tu cuenta.
+          </p>
+        </div>
+
+        <button
+          id="marcar-todas"
+          class="boton-secundario"
+          type="button"
+        >
+          Marcar todas como leídas
+        </button>
+
+        <p id="mensaje-avisos" class="mensaje"></p>
+
+        <div id="avisos" class="lista-avisos"></div>
+
+      </section>
+
+    </main>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <footer>
+      © 2026 Taller Luigi Biker · Pasión por las motocicletas
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT ORIGINAL -->
+  <script
+    type="module"
+    src="./js/cliente-panel.js"
+  ></script>
+
+  <!-- SOLO CONTROLA LA BARRA VISUAL -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const estado = document.getElementById(
+        "estado-principal"
+      );
+
+      const resultado = document.getElementById(
+        "resultado"
+      );
+
+      const pasos = document.querySelectorAll(
+        ".paso-progreso"
+      );
+
+      function actualizarProgreso() {
+        if (resultado.hidden) return;
+
+        const texto = (
+          estado.textContent || ""
+        ).toLowerCase();
+
+        let nivel = 0;
+
+        if (texto.includes("lista para entrega")) {
+          nivel = 3;
+        } else if (texto.includes("en reparación")) {
+          nivel = 2;
+        } else if (texto.includes("moto recibida")) {
+          nivel = 1;
+        }
+
+        pasos.forEach((paso, indice) => {
+          const numero = indice + 1;
+
+          paso.classList.toggle(
+            "completado",
+            numero <= nivel
+          );
+
+          paso.classList.toggle(
+            "actual",
+            numero === nivel
+          );
+        });
+      }
+
+      const observador = new MutationObserver(
+        actualizarProgreso
+      );
+
+      observador.observe(estado, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+
+      observador.observe(resultado, {
+        attributes: true,
+        attributeFilter: ["hidden"]
+      });
+
+      actualizarProgreso();
+
+    });
+  </script>
+
+</body>
+</html>

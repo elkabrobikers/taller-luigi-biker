@@ -1,0 +1,312 @@
+
+:root {
+  color-scheme: dark;
+  --fondo: #0d0d10;
+  --tarjeta: #1b1b20;
+  --campo: #29292f;
+  --borde: #404047;
+  --naranja: #ff7900;
+  --texto: #f5f5f5;
+  --gris: #adadb6;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+button, input, select, textarea { font: inherit; }
+
+button {
+  background: var(--naranja);
+  color: #111;
+  border: 0;
+  border-radius: 9px;
+  padding: 12px 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { filter: brightness(1.12); }
+button:disabled { opacity: .55; cursor: wait; }
+
+.secundario {
+  background: #393940;
+  color: white;
+  border: 1px solid #55555c;
+}
+
+.boton-eliminar {
+  background: #a52c2c;
+  color: white;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 22px max(20px, calc((100vw - 1150px) / 2));
+  background: #18181d;
+  border-bottom: 3px solid var(--naranja);
+}
+
+.cabecera h1 { margin: 0; color: var(--naranja); }
+.cabecera p { margin: 5px 0 0; color: var(--gris); }
+
+.cabecera-derecha {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.contenedor {
+  width: min(1150px, calc(100% - 28px));
+  margin: 28px auto;
+}
+
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.estadistica, .tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.estadistica { border-left: 4px solid var(--naranja); }
+.estadistica span { color: var(--gris); display: block; }
+.estadistica strong {
+  color: var(--naranja);
+  font-size: 35px;
+  display: block;
+}
+
+.tarjeta { margin-bottom: 25px; }
+
+h2 { color: var(--naranja); margin: 0 0 8px; }
+h3 { margin: 0 0 12px; }
+h4 { color: #ffab55; margin: 20px 0 10px; }
+
+.ayuda { color: var(--gris); margin: 0 0 20px; }
+
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.campo label { font-weight: bold; }
+.campo small { color: var(--gris); }
+
+input:not([type="checkbox"]),
+select, textarea {
+  width: 100%;
+  padding: 12px;
+  color: white;
+  background: var(--campo);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 1px solid var(--naranja);
+}
+
+textarea { resize: vertical; min-height: 90px; }
+
+.vista-foto {
+  width: min(100%, 350px);
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.subseccion {
+  margin: 22px 0;
+  padding: 19px;
+  background: #242429;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+}
+
+.repuestos-campos {
+  grid-template-columns: minmax(0, 2fr) minmax(90px, 1fr) minmax(120px, 1fr);
+}
+
+.lista-repuestos, .lista-reparaciones {
+  display: grid;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.item-repuesto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #18181d;
+  border: 1px solid var(--borde);
+  padding: 13px;
+  border-radius: 9px;
+}
+
+.item-repuesto p { margin: 5px 0; color: var(--gris); }
+.item-repuesto button { background: #a52c2c; color: white; }
+
+.opcion-mano-obra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+.opcion-mano-obra input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--naranja);
+}
+
+.detalle-costos {
+  background: #121216;
+  padding: 18px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.fila-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.total-general {
+  color: var(--naranja);
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 0;
+}
+
+.titulo-listado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.reparacion {
+  background: #25252a;
+  border: 1px solid var(--borde);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.reparacion h3 { color: var(--naranja); }
+.reparacion p { overflow-wrap: anywhere; }
+
+.reparacion > img {
+  width: min(100%, 350px);
+  max-height: 230px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin: 15px 0;
+}
+
+.estado {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  background: #484848;
+}
+
+.estado.recibida { background: #75511c; color: #ffe0a3; }
+.estado.en_reparacion { background: #1c4c79; color: #c4e4ff; }
+.estado.finalizada { background: #195c31; color: #b6ffcd; }
+
+.tabla-repuestos-contenedor { overflow-x: auto; }
+
+.tabla-repuestos {
+  width: 100%;
+  min-width: 380px;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+.tabla-repuestos th, .tabla-repuestos td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.tabla-repuestos th { color: #ffab55; }
+
+.reparacion form {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.avance {
+  border-left: 3px solid var(--naranja);
+  padding: 8px 12px;
+  margin: 12px 0;
+  background: #1a1a1f;
+}
+
+.avance p { margin: 4px 0; }
+
+.opciones-trabajo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-top: 1px solid var(--borde);
+  margin-top: 22px;
+  padding-top: 18px;
+}
+
+.opciones-trabajo button { flex: 1; min-width: 135px; }
+
+.mensaje { min-height: 20px; overflow-wrap: anywhere; }
+.verificando { text-align: center; padding: 65px 15px; color: var(--naranja); }
+.pie { text-align: center; padding: 24px; color: var(--gris); }
+
+@media (max-width: 700px) {
+  .cabecera { padding: 18px; }
+  .cabecera h1 { font-size: 22px; }
+  .tarjeta, .estadistica { padding: 17px; }
+  .cuadricula, .repuestos-campos, .estadisticas {
+    grid-template-columns: 1fr;
+  }
+  .item-repuesto { flex-direction: column; align-items: stretch; }
+  .opciones-trabajo { flex-direction: column; }
+  .opciones-trabajo button { width: 100%; }
+}

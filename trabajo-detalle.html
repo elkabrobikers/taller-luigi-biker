@@ -1,0 +1,450 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Detalle del trabajo | Taller Luigi Biker</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 25px;
+      font-family: Arial, sans-serif;
+      background: #101013;
+      color: white;
+    }
+
+    .documento {
+      max-width: 850px;
+      margin: auto;
+      padding: 30px;
+      background: #1c1c20;
+      border-radius: 15px;
+      border-top: 5px solid #ff7900;
+    }
+
+    h1, h2 {
+      color: #ff7900;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitulo {
+      color: #aaa;
+      margin-top: 0;
+    }
+
+    .seccion {
+      padding: 16px 0;
+      border-bottom: 1px solid #444;
+    }
+
+    .fila {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin: 10px 0;
+    }
+
+    .fila span {
+      color: #bbb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #333;
+      color: #ff9b36;
+    }
+
+    .tabla-contenedor {
+      overflow-x: auto;
+    }
+
+    .total {
+      font-size: 23px;
+      font-weight: bold;
+      color: #ff7900;
+    }
+
+    .acciones {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 18px;
+      background: #ff7900;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #ff7777;
+    }
+
+    .avance {
+      padding: 10px;
+      border-left: 3px solid #ff7900;
+      margin-bottom: 10px;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+
+      body {
+        padding: 0;
+        background: white;
+        color: black;
+      }
+
+      .documento {
+        padding: 0;
+        background: white;
+        color: black;
+        border: none;
+      }
+
+      .acciones {
+        display: none;
+      }
+
+      .fila span,
+      .subtitulo {
+        color: #444;
+      }
+
+      th {
+        background: #eee;
+        color: black;
+      }
+
+      th, td {
+        border-color: #888;
+      }
+
+      .seccion,
+      .avance {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="documento">
+
+    <div class="acciones">
+      <button type="button" onclick="window.print()">
+        📄 Imprimir / Guardar PDF
+      </button>
+
+      <button type="button" onclick="window.close()">
+        Cerrar
+      </button>
+    </div>
+
+    <h1>🏍️ TALLER LUIGI BIKER</h1>
+
+    <p class="subtitulo">
+      Comprobante de trabajo y reparación
+    </p>
+
+    <div id="contenido">
+      Cargando información del trabajo...
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { supabase } from "./js/supabase.js";
+
+    const contenido = document.getElementById("contenido");
+
+    const parametros = new URLSearchParams(location.search);
+    const id = parametros.get("id");
+    const imprimir = parametros.get("imprimir") === "1";
+
+    const dinero = valor =>
+      "Bs. " + Number(valor || 0).toFixed(2);
+
+    function elemento(tipo, texto, clase = "") {
+      const nodo = document.createElement(tipo);
+      nodo.textContent = String(texto ?? "");
+      if (clase) nodo.className = clase;
+      return nodo;
+    }
+
+    function seccion(titulo) {
+      const div = elemento("section", "", "seccion");
+      div.appendChild(elemento("h2", titulo));
+      contenido.appendChild(div);
+      return div;
+    }
+
+    function dato(destino, nombre, valor) {
+      const fila = elemento("div", "", "fila");
+      fila.appendChild(elemento("span", nombre));
+      fila.appendChild(
+        elemento("strong", valor ?? "Sin registrar")
+      );
+      destino.appendChild(fila);
+    }
+
+    async function cargar() {
+      try {
+        if (!id || !/^\d+$/.test(id)) {
+          throw new Error("Identificador de trabajo inválido.");
+        }
+
+        const { data: sesion, error: errorSesion } =
+          await supabase.auth.getUser();
+
+        if (errorSesion || !sesion.user) {
+          throw new Error("Debes iniciar sesión.");
+        }
+
+        const { data: reparacion, error } = await supabase
+          .from("reparaciones")
+          .select(
+            "id,moto_id,mecanico_id,descripcion,estado," +
+            "fecha_ingreso,fecha_entrega,costo_mano_obra," +
+            "mostrar_mano_obra"
+          )
+          .eq("id", id)
+          .eq("mecanico_id", sesion.user.id)
+          .single();
+
+        if (error) throw error;
+
+        const [resMoto, resRepuestos, resAvances] =
+          await Promise.all([
+            supabase
+              .from("motocicletas")
+              .select(
+                "placa,marca,modelo,color," +
+                "nombre_propietario,celular_propietario"
+              )
+              .eq("id", reparacion.moto_id)
+              .single(),
+
+            supabase
+              .from("repuestos_trabajo_mecanico")
+              .select(
+                "nombre,cantidad,precio_unitario"
+              )
+              .eq("reparacion_id", reparacion.id),
+
+            supabase
+              .from("avances_reparacion")
+              .select("descripcion,creado_en")
+              .eq("reparacion_id", reparacion.id)
+              .order("creado_en", { ascending: true })
+          ]);
+
+        if (resMoto.error) throw resMoto.error;
+        if (resRepuestos.error) throw resRepuestos.error;
+        if (resAvances.error) throw resAvances.error;
+
+        const moto = resMoto.data;
+        const repuestos = resRepuestos.data || [];
+        const avances = resAvances.data || [];
+
+        contenido.replaceChildren();
+
+        const general = seccion("Información del trabajo");
+
+        dato(general, "Número de trabajo", reparacion.id);
+        dato(general, "Estado", reparacion.estado);
+        dato(
+          general,
+          "Fecha de ingreso",
+          new Date(reparacion.fecha_ingreso)
+            .toLocaleString("es-BO")
+        );
+
+        if (reparacion.fecha_entrega) {
+          dato(
+            general,
+            "Fecha de entrega",
+            new Date(reparacion.fecha_entrega)
+              .toLocaleString("es-BO")
+          );
+        }
+
+        const motocicleta = seccion("Datos de la motocicleta");
+
+        dato(motocicleta, "Placa", moto.placa);
+        dato(motocicleta, "Marca", moto.marca);
+        dato(motocicleta, "Modelo", moto.modelo);
+        dato(motocicleta, "Color", moto.color);
+        dato(
+          motocicleta,
+          "Propietario",
+          moto.nombre_propietario
+        );
+        dato(
+          motocicleta,
+          "Celular",
+          moto.celular_propietario
+        );
+
+        const trabajo = seccion("Descripción del trabajo");
+        trabajo.appendChild(
+          elemento("p", reparacion.descripcion)
+        );
+
+        const partes = seccion("Repuestos utilizados");
+
+        const envoltura = elemento(
+          "div",
+          "",
+          "tabla-contenedor"
+        );
+
+        const tabla = document.createElement("table");
+        const cabecera = document.createElement("tr");
+
+        for (const nombre of [
+          "Repuesto",
+          "Cantidad",
+          "Precio",
+          "Subtotal"
+        ]) {
+          cabecera.appendChild(elemento("th", nombre));
+        }
+
+        tabla.appendChild(cabecera);
+
+        let totalRepuestos = 0;
+
+        for (const repuesto of repuestos) {
+          const subtotal =
+            Number(repuesto.cantidad) *
+            Number(repuesto.precio_unitario);
+
+          totalRepuestos += subtotal;
+
+          const fila = document.createElement("tr");
+
+          for (const valor of [
+            repuesto.nombre,
+            repuesto.cantidad,
+            dinero(repuesto.precio_unitario),
+            dinero(subtotal)
+          ]) {
+            fila.appendChild(elemento("td", valor));
+          }
+
+          tabla.appendChild(fila);
+        }
+
+        envoltura.appendChild(tabla);
+        partes.appendChild(envoltura);
+
+        if (!repuestos.length) {
+          partes.appendChild(
+            elemento("p", "Sin repuestos registrados.")
+          );
+        }
+
+        const costos = seccion("Resumen de costos");
+
+        dato(costos, "Repuestos", dinero(totalRepuestos));
+
+        const manoObra = reparacion.mostrar_mano_obra
+          ? Number(reparacion.costo_mano_obra || 0)
+          : 0;
+
+        if (reparacion.mostrar_mano_obra) {
+          dato(costos, "Mano de obra", dinero(manoObra));
+        }
+
+        const total = elemento(
+          "p",
+          `TOTAL ESTIMADO: ${dinero(totalRepuestos + manoObra)}`,
+          "total"
+        );
+
+        costos.appendChild(total);
+
+        const historial = seccion("Historial de avances");
+
+        if (!avances.length) {
+          historial.appendChild(
+            elemento("p", "Sin avances registrados.")
+          );
+        }
+
+        for (const avance of avances) {
+          const bloque = elemento(
+            "div",
+            "",
+            "avance"
+          );
+
+          bloque.appendChild(
+            elemento(
+              "strong",
+              new Date(avance.creado_en)
+                .toLocaleString("es-BO")
+            )
+          );
+
+          bloque.appendChild(
+            elemento("p", avance.descripcion)
+          );
+
+          historial.appendChild(bloque);
+        }
+
+        if (imprimir) {
+          window.print();
+        }
+
+      } catch (error) {
+        console.error(error);
+        contenido.replaceChildren();
+
+        contenido.appendChild(
+          elemento(
+            "p",
+            "No se pudo cargar el comprobante: " +
+              error.message,
+            "error"
+          )
+        );
+      }
+    }
+
+    cargar();
+  </script>
+
+</body>
+</html>
