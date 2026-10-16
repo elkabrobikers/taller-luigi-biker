@@ -189,7 +189,7 @@ async function iniciar() {
 
 // ==========================================
 // BÚSQUEDA POR PLACA
-// CUALQUIER CLIENTE AUTENTICADO
+// UTILIZA LA FUNCIÓN RPC DE SUPABASE
 // ==========================================
 
 $("form-buscar").addEventListener("submit", async evento => {
@@ -226,19 +226,16 @@ async function buscarMoto(silencioso = false) {
   }
 
   try {
-    // CAMBIO PRINCIPAL:
-    // Se busca por placa, sin filtrar por propietario_id.
-    // Las políticas RLS de Supabase siguen aplicándose.
-
-    const { data: motos, error } = await supabase
-      .from("motocicletas")
-      .select("id,placa,marca,modelo,color,foto_url")
-      .ilike("placa", placa)
-      .limit(1);
+    // La función de Supabase permite consultar por placa
+    // sin depender del propietario_id.
+    const { data, error } = await supabase.rpc(
+      "consultar_seguimiento_moto",
+      { p_placa: placa }
+    );
 
     if (error) throw error;
 
-    if (!motos?.length) {
+    if (!data || !data.moto) {
       motoActual = null;
       reparacionActual = null;
 
@@ -249,66 +246,22 @@ async function buscarMoto(silencioso = false) {
         "No encontramos una motocicleta con esa placa. " +
         "Verifica la placa o consulta al taller."
       );
-
       return;
     }
 
-    const moto = motos[0];
+    motoActual = data.moto;
+    reparacionActual = data.reparacion || null;
 
-    const {
-      data: trabajos,
-      error: errorTrabajos
-    } = await supabase
-      .from("reparaciones")
-      .select(
-        "id,moto_id,descripcion,diagnostico,estado," +
-        "fecha_ingreso,fecha_entrega,costo_mano_obra," +
-        "mostrar_mano_obra"
-      )
-      .eq("moto_id", moto.id)
-      .order("id", { ascending: false })
-      .limit(1);
+    const avances = Array.isArray(data.avances)
+      ? data.avances
+      : [];
 
-    if (errorTrabajos) throw errorTrabajos;
-
-    motoActual = moto;
-    reparacionActual = trabajos?.[0] || null;
-
-    let avances = [];
-    let repuestos = [];
-
-    if (reparacionActual) {
-      const [
-        respuestaAvances,
-        respuestaRepuestos
-      ] = await Promise.all([
-        supabase
-          .from("avances_reparacion")
-          .select("id,descripcion,creado_en")
-          .eq("reparacion_id", reparacionActual.id)
-          .order("creado_en", { ascending: true }),
-
-        supabase
-          .from("repuestos_trabajo_mecanico")
-          .select("id,nombre,cantidad,precio_unitario")
-          .eq("reparacion_id", reparacionActual.id)
-          .order("id", { ascending: true })
-      ]);
-
-      if (respuestaAvances.error) {
-        throw respuestaAvances.error;
-      }
-
-      if (respuestaRepuestos.error) {
-        throw respuestaRepuestos.error;
-      }
-
-      avances = respuestaAvances.data || [];
-      repuestos = respuestaRepuestos.data || [];
-    }
+    const repuestos = Array.isArray(data.repuestos)
+      ? data.repuestos
+      : [];
 
     dibujarMoto(
-      moto,
+      motoActual,
       reparacionActual,
       avances,
       repuestos
@@ -319,6 +272,10 @@ async function buscarMoto(silencioso = false) {
 
   } catch (error) {
     console.error("Error al buscar moto:", error);
+
+    motoActual = null;
+    reparacionActual = null;
+    $("resultado").hidden = true;
 
     mostrarMensaje(
       "mensaje-busqueda",
@@ -451,8 +408,11 @@ function dibujarMoto(moto, trabajo, avances, repuestos) {
   dibujarHistorial(trabajo, avances);
   dibujarRepuestos(trabajo, repuestos);
 
+  // El comprobante se mantiene limitado a motos propias.
+  // La página del comprobante debe validar permisos también.
   $("panel-comprobante").hidden =
-    trabajo?.estado !== "finalizada";
+    trabajo?.estado !== "finalizada" ||
+    !trabajo?.id;
 }
 
 // ==========================================
@@ -558,7 +518,7 @@ function dibujarHistorial(trabajo, avances) {
     historial,
     "Lista para despacho",
     finalizada
-      ? "Reparación finalizada. Comprobante disponible."
+      ? "Reparación finalizada."
       : "Pendiente de finalización y entrega.",
     finalizada
       ? fecha(trabajo.fecha_entrega)
