@@ -21,8 +21,13 @@ let eliminando = false;
 
 function crear(tipo, texto = "", clase = "") {
   const elemento = document.createElement(tipo);
+
   elemento.textContent = String(texto ?? "");
-  elemento.className = clase;
+
+  if (clase) {
+    elemento.className = clase;
+  }
+
   return elemento;
 }
 
@@ -32,22 +37,16 @@ function crearCampo(etiqueta, valor, tipo = "text") {
 
   const input = document.createElement("input");
   input.type = tipo;
-  input.value = valor || "";
+  input.value = valor ?? "";
 
   contenedor.append(label, input);
 
   return { contenedor, input };
 }
 
-function mostrarResultado(
-  elemento,
-  texto,
-  correcto = false
-) {
+function mostrarResultado(elemento, texto, correcto = false) {
   elemento.textContent = texto;
-  elemento.style.color = correcto
-    ? "#69e4a2"
-    : "#ff8585";
+  elemento.style.color = correcto ? "#69e4a2" : "#ff8585";
   elemento.style.whiteSpace = "pre-line";
 }
 
@@ -56,27 +55,19 @@ function obtenerMensajeError(error) {
     return error;
   }
 
-  if (error?.message) {
-    return error.message;
-  }
-
-  if (error?.details) {
-    return error.details;
-  }
-
-  try {
-    return JSON.stringify(error) || "Error desconocido.";
-  } catch {
-    return "Error desconocido.";
-  }
+  return (
+    error?.message ||
+    error?.details ||
+    "Error desconocido."
+  );
 }
 
 async function leerErrorFuncion(error) {
   let mensaje = obtenerMensajeError(error);
 
-  if (error?.context instanceof Response) {
-    const respuesta = error.context;
+  const respuesta = error?.context;
 
+  if (respuesta && typeof respuesta.clone === "function") {
     try {
       const cuerpo = await respuesta.clone().json();
 
@@ -85,7 +76,7 @@ async function leerErrorFuncion(error) {
         cuerpo?.message ||
         mensaje;
     } catch {
-      // Mantener el mensaje disponible
+      // Conservar el mensaje original.
     }
 
     return `HTTP ${respuesta.status}: ${mensaje}`;
@@ -100,11 +91,10 @@ async function leerErrorFuncion(error) {
 
 async function verificarAcceso() {
   try {
-    const { data, error } =
-      await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getUser();
 
     if (error || !data?.user) {
-      location.replace("./login.html");
+      window.location.replace("./login.html");
       return;
     }
 
@@ -136,7 +126,6 @@ async function verificarAcceso() {
     $("verificando").hidden = true;
     $("contenido").hidden = false;
 
-    // Mantener el registro de mecánicos
     prepararRegistro({
       formularioId: "form-registro",
       mensajeId: "mensaje-registro",
@@ -148,14 +137,10 @@ async function verificarAcceso() {
     await cargarMecanicos();
 
   } catch (error) {
-    console.error(
-      "Error al verificar acceso:",
-      error
-    );
+    console.error("Error de acceso:", error);
 
     $("verificando").textContent =
-      "Error de acceso: " +
-      obtenerMensajeError(error);
+      "Error de acceso: " + obtenerMensajeError(error);
   }
 }
 
@@ -166,10 +151,10 @@ async function verificarAcceso() {
 async function cargarMecanicos() {
   if (!autorizado) return;
 
-  $("actualizar").disabled = true;
+  const botonActualizar = $("actualizar");
 
-  $("mensaje").textContent =
-    "Cargando mecánicos...";
+  botonActualizar.disabled = true;
+  $("mensaje").textContent = "Cargando mecánicos...";
 
   try {
     const { data, error } = await supabase
@@ -179,33 +164,27 @@ async function cargarMecanicos() {
       .order("nombre")
       .limit(200);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     mecanicos = data || [];
-
     mostrarMecanicos();
 
   } catch (error) {
-    console.error(
-      "Error al cargar mecánicos:",
-      error
+    console.error("Error al cargar mecánicos:", error);
+
+    mostrarResultado(
+      $("mensaje"),
+      "Error al cargar mecánicos: " +
+      obtenerMensajeError(error)
     );
 
-    $("mensaje").textContent =
-      "Error al cargar mecánicos: " +
-      obtenerMensajeError(error);
-
-    $("mensaje").style.color = "#ff8585";
-
   } finally {
-    $("actualizar").disabled = false;
+    botonActualizar.disabled = false;
   }
 }
 
 // ==========================================
-// ELIMINAR MECÁNICO DEFINITIVAMENTE
+// ELIMINAR MECÁNICO
 // ==========================================
 
 async function eliminarMecanico(
@@ -213,28 +192,22 @@ async function eliminarMecanico(
   boton,
   resultado
 ) {
-  if (!autorizado || eliminando) {
-    return;
-  }
+  if (!autorizado || eliminando) return;
 
-  // Una sola confirmación.
-  // No se pide escribir ELIMINAR.
   const confirmado = window.confirm(
     `¿Eliminar definitivamente a ${mecanico.nombre}?\n\n` +
-    "También se eliminarán sus reparaciones, " +
-    "avances, repuestos asociados, historiales " +
-    "y facturas relacionadas.\n\n" +
-    "Las cuentas de clientes y sus motocicletas " +
-    "no deben eliminarse.\n\n" +
+    "Se eliminará su cuenta de acceso al sistema.\n\n" +
+    "Las motocicletas, reparaciones, avances y " +
+    "repuestos deben conservarse.\n\n" +
+    "Si existen relaciones que impidan eliminar " +
+    "la cuenta, el servidor rechazará la operación.\n\n" +
     "ESTA ACCIÓN NO SE PUEDE DESHACER.\n\n" +
-    "Aceptar = Eliminar\n" +
-    "Cancelar = Conservar"
+    "Aceptar = Eliminar cuenta\n" +
+    "Cancelar = Conservar cuenta"
   );
 
   if (!confirmado) {
-    resultado.textContent =
-      "Eliminación cancelada.";
-
+    resultado.textContent = "Eliminación cancelada.";
     resultado.style.color = "#cccccc";
     return;
   }
@@ -245,12 +218,12 @@ async function eliminarMecanico(
   boton.textContent = "Eliminando...";
 
   resultado.textContent =
-    "Solicitando eliminación de cuenta y trabajos...";
+    "Verificando relaciones y solicitando eliminación...";
 
   resultado.style.color = "#cccccc";
 
   try {
-    // Comprobar que la sesión siga activa
+    // Comprobar sesión.
     const {
       data: sesion,
       error: errorSesion
@@ -265,8 +238,7 @@ async function eliminarMecanico(
       );
     }
 
-    // La eliminación se realiza en el servidor.
-    // Nunca borrar tablas directamente desde aquí.
+    // La eliminación se realiza en Supabase.
     const { data, error } =
       await supabase.functions.invoke(
         FUNCION_ELIMINAR,
@@ -291,39 +263,33 @@ async function eliminarMecanico(
       );
     }
 
-    // Actualizar lista después de confirmar éxito
+    // Solo informar éxito si el servidor
+    // confirmó la operación.
     await cargarMecanicos();
 
-    const cantidad = Number(
-      data.trabajos_eliminados || 0
-    );
-
     $("mensaje").textContent =
-      `Mecánico ${mecanico.nombre} eliminado ` +
-      `correctamente. Reparaciones eliminadas: ` +
-      `${cantidad}.`;
+      `Mecánico ${mecanico.nombre} eliminado correctamente. ` +
+      "La operación no solicitó borrar sus trabajos.";
 
     $("mensaje").style.color = "#69e4a2";
 
   } catch (error) {
-    console.error(
-      "Error al eliminar mecánico:",
-      error
-    );
+    console.error("Error al eliminar mecánico:", error);
 
     mostrarResultado(
       resultado,
       "No se pudo completar la eliminación:\n" +
       obtenerMensajeError(error) +
-      "\n\nRevisa los registros antes de volver " +
-      "a intentarlo, porque el servidor podría " +
-      "haber eliminado parte de los datos."
+      "\n\nNo vuelvas a intentar la eliminación " +
+      "sin revisar primero el error. " +
+      "Si el servidor informa que la cuenta " +
+      "fue eliminada parcialmente, comprueba " +
+      "su estado en Supabase."
     );
 
   } finally {
     eliminando = false;
 
-    // Solo restaurar si la tarjeta sigue visible
     if (boton.isConnected) {
       boton.disabled = false;
       boton.textContent = "🗑️ Eliminar";
@@ -336,56 +302,43 @@ async function eliminarMecanico(
 // ==========================================
 
 function mostrarMecanicos() {
-  const filtro = $("buscar")
-    .value.trim().toLowerCase();
+  const filtro = $("buscar").value
+    .trim()
+    .toLowerCase();
 
-  const encontrados = mecanicos.filter(
-    (mecanico) => {
-      const texto = [
-        mecanico.nombre || "",
-        mecanico.celular || ""
-      ].join(" ").toLowerCase();
+  const encontrados = mecanicos.filter((mecanico) => {
+    const texto = [
+      mecanico.nombre || "",
+      mecanico.celular || ""
+    ].join(" ").toLowerCase();
 
-      return texto.includes(filtro);
-    }
-  );
+    return texto.includes(filtro);
+  });
 
-  $("lista").replaceChildren();
+  const lista = $("lista");
+  lista.replaceChildren();
 
   $("mensaje").textContent =
     `Mostrando ${encontrados.length} mecánico(s).`;
 
   $("mensaje").style.color = "";
 
-  if (encontrados.length === 0) {
-    $("lista").appendChild(
-      crear(
-        "p",
-        "No se encontraron mecánicos."
-      )
+  if (!encontrados.length) {
+    lista.appendChild(
+      crear("p", "No se encontraron mecánicos.")
     );
-
     return;
   }
 
   for (const mecanico of encontrados) {
-    const tarjeta = crear(
-      "article",
-      "",
-      "mecanico"
-    );
+    const tarjeta = crear("article", "", "mecanico");
 
     const titulo = crear(
       "h3",
-      "👨‍🔧 " +
-      (mecanico.nombre || "Sin nombre")
+      "👨‍🔧 " + (mecanico.nombre || "Sin nombre")
     );
 
-    const campos = crear(
-      "div",
-      "",
-      "campos"
-    );
+    const campos = crear("div", "", "campos");
 
     const nombre = crearCampo(
       "Nombre",
@@ -403,19 +356,12 @@ function mostrarMecanicos() {
       celular.contenedor
     );
 
-    const acciones = crear(
-      "div",
-      "",
-      "acciones"
-    );
+    const acciones = crear("div", "", "acciones");
 
     const estado = crear(
       "span",
-      mecanico.activo
-        ? "Activo"
-        : "Inactivo",
-      "estado" +
-      (mecanico.activo ? "" : " inactivo")
+      mecanico.activo ? "Activo" : "Inactivo",
+      "estado" + (mecanico.activo ? "" : " inactivo")
     );
 
     const botonGuardar = crear(
@@ -427,9 +373,7 @@ function mostrarMecanicos() {
 
     const botonEstado = crear(
       "button",
-      mecanico.activo
-        ? "Desactivar"
-        : "Activar",
+      mecanico.activo ? "Desactivar" : "Activar",
       "btn-secundario"
     );
 
@@ -445,175 +389,131 @@ function mostrarMecanicos() {
     botonEliminar.style.background = "#91252d";
     botonEliminar.style.color = "#ffffff";
 
-    const resultado = crear(
-      "p",
-      "",
-      "resultado"
-    );
+    const resultado = crear("p", "", "resultado");
 
-    resultado.setAttribute(
-      "role",
-      "status"
-    );
+    resultado.setAttribute("role", "status");
 
     // ======================================
     // GUARDAR CAMBIOS
     // ======================================
 
-    botonGuardar.addEventListener(
-      "click",
-      async () => {
-        const nuevoNombre =
-          nombre.input.value.trim();
+    botonGuardar.addEventListener("click", async () => {
+      const nuevoNombre = nombre.input.value.trim();
+      const nuevoCelular = celular.input.value.trim();
 
-        const nuevoCelular =
-          celular.input.value.trim();
-
-        if (!nuevoNombre) {
-          mostrarResultado(
-            resultado,
-            "El nombre es obligatorio."
-          );
-
-          return;
-        }
-
-        botonGuardar.disabled = true;
-
-        try {
-          const { error } = await supabase
-            .from("perfiles")
-            .update({
-              nombre: nuevoNombre,
-              celular: nuevoCelular || null
-            })
-            .eq("id", mecanico.id)
-            .eq("rol", "mecanico")
-            .select("id")
-            .single();
-
-          if (error) {
-            throw error;
-          }
-
-          mecanico.nombre = nuevoNombre;
-          mecanico.celular = nuevoCelular;
-
-          titulo.textContent =
-            "👨‍🔧 " + nuevoNombre;
-
-          mostrarResultado(
-            resultado,
-            "Cambios guardados correctamente.",
-            true
-          );
-
-        } catch (error) {
-          console.error(
-            "Error al guardar mecánico:",
-            error
-          );
-
-          mostrarResultado(
-            resultado,
-            "Error: " +
-            obtenerMensajeError(error)
-          );
-
-        } finally {
-          botonGuardar.disabled = false;
-        }
+      if (!nuevoNombre) {
+        mostrarResultado(
+          resultado,
+          "El nombre es obligatorio."
+        );
+        return;
       }
-    );
+
+      botonGuardar.disabled = true;
+
+      try {
+        const { error } = await supabase
+          .from("perfiles")
+          .update({
+            nombre: nuevoNombre,
+            celular: nuevoCelular || null
+          })
+          .eq("id", mecanico.id)
+          .eq("rol", "mecanico")
+          .select("id")
+          .single();
+
+        if (error) throw error;
+
+        mecanico.nombre = nuevoNombre;
+        mecanico.celular = nuevoCelular;
+
+        titulo.textContent = "👨‍🔧 " + nuevoNombre;
+
+        mostrarResultado(
+          resultado,
+          "Cambios guardados correctamente.",
+          true
+        );
+
+      } catch (error) {
+        mostrarResultado(
+          resultado,
+          "Error: " + obtenerMensajeError(error)
+        );
+
+      } finally {
+        botonGuardar.disabled = false;
+      }
+    });
 
     // ======================================
     // ACTIVAR / DESACTIVAR
     // ======================================
 
-    botonEstado.addEventListener(
-      "click",
-      async () => {
-        const nuevoEstado = !mecanico.activo;
+    botonEstado.addEventListener("click", async () => {
+      const nuevoEstado = !mecanico.activo;
 
-        const confirmado = window.confirm(
-          nuevoEstado
-            ? `¿Activar a ${mecanico.nombre}?`
-            : `¿Desactivar a ${mecanico.nombre}?`
+      const confirmado = window.confirm(
+        nuevoEstado
+          ? `¿Activar a ${mecanico.nombre}?`
+          : `¿Desactivar a ${mecanico.nombre}?`
+      );
+
+      if (!confirmado) return;
+
+      botonEstado.disabled = true;
+
+      try {
+        const { error } = await supabase
+          .from("perfiles")
+          .update({ activo: nuevoEstado })
+          .eq("id", mecanico.id)
+          .eq("rol", "mecanico")
+          .select("id")
+          .single();
+
+        if (error) throw error;
+
+        mecanico.activo = nuevoEstado;
+
+        estado.textContent =
+          nuevoEstado ? "Activo" : "Inactivo";
+
+        estado.className =
+          "estado" + (nuevoEstado ? "" : " inactivo");
+
+        botonEstado.textContent =
+          nuevoEstado ? "Desactivar" : "Activar";
+
+        mostrarResultado(
+          resultado,
+          "Estado actualizado correctamente.",
+          true
         );
 
-        if (!confirmado) {
-          return;
-        }
+      } catch (error) {
+        mostrarResultado(
+          resultado,
+          "Error: " + obtenerMensajeError(error)
+        );
 
-        botonEstado.disabled = true;
-
-        try {
-          const { error } = await supabase
-            .from("perfiles")
-            .update({
-              activo: nuevoEstado
-            })
-            .eq("id", mecanico.id)
-            .eq("rol", "mecanico")
-            .select("id")
-            .single();
-
-          if (error) {
-            throw error;
-          }
-
-          mecanico.activo = nuevoEstado;
-
-          estado.textContent =
-            nuevoEstado
-              ? "Activo"
-              : "Inactivo";
-
-          estado.className =
-            "estado" +
-            (nuevoEstado ? "" : " inactivo");
-
-          botonEstado.textContent =
-            nuevoEstado
-              ? "Desactivar"
-              : "Activar";
-
-          mostrarResultado(
-            resultado,
-            "Estado actualizado correctamente.",
-            true
-          );
-
-        } catch (error) {
-          console.error(
-            "Error al cambiar estado:",
-            error
-          );
-
-          mostrarResultado(
-            resultado,
-            "Error: " +
-            obtenerMensajeError(error)
-          );
-
-        } finally {
-          botonEstado.disabled = false;
-        }
+      } finally {
+        botonEstado.disabled = false;
       }
-    );
+    });
 
     // ======================================
-    // BOTÓN ELIMINAR
+    // ELIMINAR
     // ======================================
 
-    botonEliminar.addEventListener(
-      "click",
-      () => eliminarMecanico(
+    botonEliminar.addEventListener("click", () => {
+      eliminarMecanico(
         mecanico,
         botonEliminar,
         resultado
-      )
-    );
+      );
+    });
 
     acciones.append(
       estado,
@@ -629,7 +529,7 @@ function mostrarMecanicos() {
       resultado
     );
 
-    $("lista").appendChild(tarjeta);
+    lista.appendChild(tarjeta);
   }
 }
 
