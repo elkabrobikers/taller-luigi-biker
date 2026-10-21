@@ -2,369 +2,1665 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d11">
 
-  <title>Taller Luigi Biker | Inicio</title>
+<title>Taller Luigi Biker | Inicio</title>
 
-  <link rel="stylesheet" href="./css/estilos.css">
-  <link rel="stylesheet" href="./css/seguimiento-publico.css">
+<link rel="stylesheet" href="./css/estilos.css">
+<link rel="stylesheet" href="./css/seguimiento-publico.css">
 
-  <script type="module" src="./js/app.js"></script>
+<style>
+:root {
+  --naranja: #ff7900;
+  --naranja-claro: #ffac56;
+  --oscuro: #0b0e13;
+  --fondo: #121720;
+  --tarjeta: #1d242e;
+  --borde: #394350;
+  --gris: #b5bdc9;
+  --blanco: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--oscuro);
+  color: var(--blanco);
+}
+
+section,
+#catalogo {
+  scroll-margin-top: 95px;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* NAVEGACIÓN */
+
+.encabezado {
+  background: rgba(10, 13, 18, .98);
+  border-bottom: 1px solid var(--borde);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.logo span {
+  color: var(--naranja);
+}
+
+.nav-links a {
+  font-weight: 700;
+}
+
+.nav-links .btn-acceso {
+  background: var(--naranja);
+  color: #111;
+  border-radius: 8px;
+}
+
+/* PORTADA */
+
+.hero {
+  min-height: 680px;
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 6, 9, .97),
+      rgba(4, 6, 9, .83) 48%,
+      rgba(4, 6, 9, .35)
+    ),
+    url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1800&q=85")
+    center / cover no-repeat;
+  border-bottom: 4px solid var(--naranja);
+}
+
+.hero-contenido {
+  max-width: 1300px;
+  width: 100%;
+  margin: auto;
+  padding: 85px 28px;
+}
+
+.hero .etiqueta {
+  display: inline-block;
+  color: #ffb16c;
+  background: rgba(255, 121, 0, .1);
+  border: 1px solid rgba(255, 121, 0, .5);
+  padding: 10px 15px;
+  border-radius: 30px;
+  font-size: 12px;
+}
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 85px);
+  font-weight: 950;
+  line-height: 1.04;
+  letter-spacing: -2px;
+  max-width: 850px;
+}
+
+.hero h1 span {
+  color: var(--naranja);
+}
+
+.hero p {
+  max-width: 600px;
+  color: #d7dbe2;
+  line-height: 1.85;
+}
+
+.hero-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-top: 30px;
+}
+
+.btn-principal,
+.btn-producto {
+  background: var(--naranja);
+  color: #111;
+  font-weight: 900;
+}
+
+.btn-principal:hover,
+.btn-producto:hover {
+  background: var(--naranja-claro);
+  color: #111;
+}
+
+.btn-secundario {
+  background: rgba(15, 18, 24, .65);
+  border: 1px solid #9298a2;
+}
+
+.marcas-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 38px;
+}
+
+.marcas-hero span {
+  padding: 9px 14px;
+  background: #181d25;
+  border: 1px solid #434a55;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* INFORMACIÓN */
+
+.franja {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #171c23;
+  border-bottom: 1px solid var(--borde);
+}
+
+.franja div {
+  padding: 24px;
+  text-align: center;
+  border-right: 1px solid var(--borde);
+}
+
+.franja strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 17px;
+}
+
+.franja p {
+  color: var(--gris);
+  font-size: 13px;
+}
+
+/* MOTOCICLETAS */
+
+.deportivas {
+  padding: 90px 22px;
+  background: #10141a;
+}
+
+.deportivas-grid {
+  max-width: 1300px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.deportiva {
+  background: #1b2028;
+  border: 1px solid #363d48;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.deportiva:hover {
+  transform: translateY(-6px);
+  border-color: var(--naranja);
+}
+
+.deportiva img {
+  display: block;
+  width: 100%;
+  height: 225px;
+  object-fit: cover;
+}
+
+.deportiva-info {
+  padding: 23px;
+}
+
+.deportiva-info small {
+  color: var(--naranja);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.deportiva-info h3 {
+  margin: 10px 0;
+  color: white;
+  font-size: 22px;
+}
+
+.deportiva-info p {
+  color: var(--gris);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.nota-galeria {
+  max-width: 1000px;
+  margin: 25px auto 0;
+  text-align: center;
+  color: #929aa6;
+  font-size: 12px;
+}
+
+/* SERVICIOS */
+
+#servicios {
+  background: #151a21;
+}
+
+#servicios .tarjeta,
+#repuestos .producto {
+  background: linear-gradient(145deg, #252b35, #191e26);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+#servicios .tarjeta:hover,
+#repuestos .producto:hover {
+  border-color: var(--naranja);
+  transform: translateY(-5px);
+}
+
+#servicios .tarjeta img {
+  height: 240px;
+  object-fit: cover;
+}
+
+#servicios .tarjeta-contenido {
+  padding: 27px;
+}
+
+#servicios .tarjeta h3,
+#repuestos .producto h3 {
+  color: white;
+}
+
+#servicios .tarjeta p,
+#repuestos .producto p {
+  color: var(--gris);
+}
+
+/* REPUESTOS */
+
+#repuestos {
+  background: #0f1319;
+}
+
+#repuestos .producto {
+  padding: 36px 24px;
+}
+
+.producto-icono {
+  font-size: 54px;
+}
+
+/* CATÁLOGO SUPABASE */
+
+#catalogo.catalogo-publico {
+  display: block;
+  width: min(100%, 1320px);
+  max-width: 1320px;
+  margin: 80px auto 0;
+  padding: 38px 28px;
+  background: #191f28;
+  border: 1px solid #3a424e;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+.catalogo-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: #242b35;
+  border-left: 4px solid var(--naranja);
+  border-radius: 10px;
+  padding: 22px;
+  margin-bottom: 25px;
+}
+
+.catalogo-cabecera strong {
+  display: block;
+  color: white;
+  font-size: 19px;
+  margin-bottom: 7px;
+}
+
+.catalogo-cabecera p {
+  color: var(--gris);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.catalogo-etiqueta {
+  padding: 10px 14px;
+  color: #ffb36f;
+  border: 1px solid #81502d;
+  background: rgba(255,121,0,.09);
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+#catalogo .catalogo-filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+#buscar-producto-publico,
+#categoria-publica {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 55px;
+  padding: 13px 16px;
+  border-radius: 9px;
+  border: 1px solid #4b5462;
+  background: #10151c;
+  color: white;
+  outline: none;
+}
+
+#buscar-producto-publico:focus,
+#categoria-publica:focus {
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 3px rgba(255,121,0,.15);
+}
+
+#mensaje-catalogo {
+  display: block;
+  color: #f1c08c;
+  line-height: 1.7;
+  margin: 10px 0;
+}
+
+#lista-productos-publicos.productos-publicos {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  width: 100%;
+  align-items: stretch;
+}
+
+#lista-productos-publicos .producto-publico {
+  display: flex !important;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #232a34;
+  border: 1px solid #404a57;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform .25s, border-color .25s;
+}
+
+#lista-productos-publicos .producto-publico:hover {
+  transform: translateY(-5px);
+  border-color: var(--naranja);
+}
+
+#lista-productos-publicos .producto-publico-imagen {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 245px;
+  min-height: 245px;
+  padding: 0;
+  overflow: hidden;
+  background: #f1f2f4;
+  color: #555d69;
+  text-align: center;
+  font-size: 14px;
+}
+
+#lista-productos-publicos .producto-publico-imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+  background: #f1f2f4;
+}
+
+#lista-productos-publicos .producto-publico-info {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1;
+  gap: 11px;
+  padding: 23px;
+  background: transparent;
+  text-align: left;
+}
+
+#lista-productos-publicos .producto-publico-info h3 {
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.35;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+#lista-productos-publicos .producto-publico-info p {
+  color: #b9c0cb;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+#lista-productos-publicos .producto-publico-precio {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #444c58;
+  color: #ff9b38;
+  font-size: 27px;
+  font-weight: 900;
+}
+
+#lista-productos-publicos .producto-publico-stock {
+  align-self: flex-start;
+  background: #173c2c;
+  color: #a5ebc4;
+  border: 1px solid #38694e;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#lista-productos-publicos > p {
+  grid-column: 1 / -1;
+  background: #242b35;
+  border: 1px dashed #58616e;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  color: white;
+}
+
+/* SEGUIMIENTO */
+
+#seguimiento {
+  background: #11161d;
+}
+
+.seguimiento-caja {
+  background: #222a34;
+  border: 1px solid #414b58;
+}
+
+#form-buscar-moto input {
+  background: #11161d;
+  color: white;
+}
+
+/* CONTACTO PROFESIONAL */
+
+#contacto {
+  padding: 90px 20px;
+  background:
+    radial-gradient(
+      ellipse at top right,
+      rgba(255,121,0,.08),
+      transparent 45%
+    ),
+    #0d1117;
+}
+
+.contacto-contenido {
+  max-width: 1300px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 25px;
+  align-items: stretch;
+}
+
+.contacto-info,
+.contacto-mapa {
+  min-width: 0;
+  background: #1d242e;
+  border: 1px solid #39434f;
+  border-radius: 17px;
+  padding: 30px;
+  overflow: hidden;
+}
+
+.contacto-info h3,
+.contacto-mapa h3 {
+  color: white;
+  font-size: 25px;
+  margin: 0 0 20px;
+}
+
+.contacto-info > p,
+.contacto-mapa > p {
+  color: var(--gris);
+  line-height: 1.8;
+}
+
+.contacto-dato {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  background: #121821;
+  border: 1px solid #343e4b;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 14px 0;
+}
+
+.contacto-dato .dato-icono {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.contacto-dato strong {
+  display: block;
+  color: white;
+  font-size: 15px;
+}
+
+.contacto-dato p {
+  color: var(--gris);
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.contacto-dato a {
+  color: #ffb16c;
+  overflow-wrap: anywhere;
+}
+
+.redes-titulo {
+  color: white;
+  margin: 28px 0 15px;
+  font-size: 19px;
+}
+
+.redes-sociales {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+
+.red-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 800;
+  font-size: 14px;
+  transition: transform .2s, filter .2s;
+}
+
+.red-social:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+  color: white;
+}
+
+.red-social svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.red-tiktok {
+  background: #08090c;
+  border: 1px solid #525b69;
+}
+
+.red-facebook {
+  background: #1877f2;
+}
+
+.red-whatsapp {
+  background: #1b9e52;
+}
+
+.red-maps {
+  background: #293648;
+  border: 1px solid #647186;
+}
+
+.mapa-contenedor {
+  width: 100%;
+  height: 385px;
+  border-radius: 13px;
+  overflow: hidden;
+  border: 1px solid #4c5664;
+  background: #111820;
+  margin-top: 20px;
+}
+
+.mapa-contenedor iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mapa-acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-mapa {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px;
+  background: var(--naranja);
+  color: #101010;
+  border-radius: 9px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.btn-mapa:hover {
+  background: var(--naranja-claro);
+  color: #101010;
+}
+
+/* WHATSAPP FLOTANTE */
+
+.whatsapp-flotante {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  width: 66px;
+  height: 66px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #25d366;
+  color: white;
+  box-shadow: 0 8px 28px rgba(37,211,102,.45);
+  border: 3px solid white;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.whatsapp-flotante:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 35px rgba(37,211,102,.65);
+  color: white;
+}
+
+.whatsapp-flotante svg {
+  width: 36px;
+  height: 36px;
+  fill: currentColor;
+}
+
+.whatsapp-texto {
+  position: absolute;
+  right: 76px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e252e;
+  color: white;
+  border: 1px solid #4b5765;
+  padding: 11px 15px;
+  border-radius: 9px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 5px 18px rgba(0,0,0,.3);
+}
+
+footer {
+  background: #090b0f;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .deportivas-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  #lista-productos-publicos.productos-publicos {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    background: #151a21;
+    border-bottom: 1px solid #343a44;
+    max-height: calc(100vh - 75px);
+    overflow-y: auto;
+  }
+
+  .franja {
+    grid-template-columns: 1fr;
+  }
+
+  .franja div {
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .contacto-contenido {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .hero {
+    min-height: 610px;
+    background-position: 62% center;
+  }
+
+  .hero-contenido {
+    padding: 65px 20px;
+  }
+
+  .hero h1 {
+    letter-spacing: -1px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .hero-botones {
+    flex-direction: column;
+  }
+
+  .hero-botones a {
+    width: 100%;
+  }
+
+  .marcas-hero span {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+
+  .deportivas {
+    padding: 65px 18px;
+  }
+
+  .deportivas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #catalogo.catalogo-publico {
+    padding: 25px 15px;
+    margin-top: 60px;
+  }
+
+  #catalogo .catalogo-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  #lista-productos-publicos.productos-publicos {
+    grid-template-columns: 1fr;
+  }
+
+  #lista-productos-publicos .producto-publico-imagen {
+    height: 260px;
+  }
+
+  #contacto {
+    padding: 65px 15px;
+  }
+
+  .contacto-info,
+  .contacto-mapa {
+    padding: 20px 16px;
+  }
+
+  .redes-sociales {
+    grid-template-columns: 1fr;
+  }
+
+  .mapa-contenedor {
+    height: 330px;
+  }
+
+  .whatsapp-flotante {
+    width: 58px;
+    height: 58px;
+    right: 15px;
+    bottom: 15px;
+  }
+
+  .whatsapp-flotante svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .whatsapp-texto {
+    display: none;
+  }
+}
+</style>
+
+<script type="module" src="./js/app.js"></script>
 </head>
+
 <body>
 
-  <!-- MENÚ PRINCIPAL -->
-  <header class="encabezado">
-    <nav class="navbar">
-      <a href="#inicio" class="logo">
-        🏍️ <span>LUIGI</span> BIKER
+<!-- NAVEGACIÓN -->
+
+<header class="encabezado">
+  <nav class="navbar">
+
+    <a href="#inicio" class="logo">
+      🏍️ <span>LUIGI</span> BIKER
+    </a>
+
+    <button
+      class="menu-toggle"
+      id="menu-toggle"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+    >☰</button>
+
+    <div class="nav-links" id="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#deportivas">Deportivas</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#repuestos">Repuestos</a>
+      <a href="#catalogo">Productos</a>
+      <a href="#seguimiento">Seguimiento</a>
+      <a href="#contacto">Contacto</a>
+      <a href="./login.html" class="btn-acceso">
+        Iniciar sesión
+      </a>
+    </div>
+
+  </nav>
+</header>
+
+<!-- PORTADA -->
+
+<section id="inicio" class="hero">
+  <div class="hero-contenido">
+
+    <span class="etiqueta">
+      🏁 BIENVENIDO A TALLER LUIGI BIKER
+    </span>
+
+    <h1>
+      TU MOTO EN
+      <span>LAS MEJORES MANOS</span>
+    </h1>
+
+    <p>
+      Servicio de reparación, mantenimiento,
+      diagnóstico y venta de repuestos para
+      motocicletas deportivas, urbanas
+      y de diferentes cilindradas.
+    </p>
+
+    <div class="hero-botones">
+      <a href="#servicios" class="btn-principal">
+        🔧 Nuestros servicios
       </a>
 
+      <a href="#catalogo" class="btn-secundario">
+        🛒 Ver productos
+      </a>
+
+      <a href="#seguimiento" class="btn-secundario">
+        🏍️ Seguir mi moto
+      </a>
+    </div>
+
+    <div class="marcas-hero">
+      <span>YAMAHA</span>
+      <span>HONDA</span>
+      <span>KAWASAKI</span>
+      <span>SUZUKI</span>
+      <span>Y MÁS</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- INFORMACIÓN RÁPIDA -->
+
+<div class="franja">
+
+  <div>
+    <strong>🔧 Reparación mecánica</strong>
+    <p>Atención y mantenimiento de motocicletas</p>
+  </div>
+
+  <div>
+    <strong>⚙️ Repuestos y accesorios</strong>
+    <p>Consulta productos registrados en la tienda</p>
+  </div>
+
+  <div>
+    <strong>🏍️ Seguimiento por placa</strong>
+    <p>Revisa el progreso público de tu reparación</p>
+  </div>
+
+</div>
+
+<!-- GALERÍA -->
+
+<section id="deportivas" class="deportivas">
+
+  <div class="titulo-seccion">
+    <span>PASIÓN POR LA VELOCIDAD</span>
+    <h2>Motocicletas deportivas</h2>
+    <p>
+      Yamaha, Honda, Kawasaki, Suzuki y otras
+      grandes marcas del motociclismo.
+    </p>
+  </div>
+
+  <div class="deportivas-grid">
+
+    <article class="deportiva">
+      <img
+        src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=850"
+        alt="Motocicleta ilustrativa"
+        loading="lazy"
+      >
+      <div class="deportiva-info">
+        <small>YAMAHA</small>
+        <h3>YZF-R1 / R6 / R7</h3>
+        <p>
+          Ingeniería, aerodinámica y pasión
+          por el rendimiento deportivo.
+        </p>
+      </div>
+    </article>
+
+    <article class="deportiva">
+      <img
+        src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=850"
+        alt="Motocicleta ilustrativa"
+        loading="lazy"
+      >
+      <div class="deportiva-info">
+        <small>HONDA</small>
+        <h3>CBR600 / CBR1000RR</h3>
+        <p>
+          La familia CBR y su tradición
+          en motocicletas deportivas.
+        </p>
+      </div>
+    </article>
+
+    <article class="deportiva">
+      <img
+        src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=850"
+        alt="Motocicleta ilustrativa"
+        loading="lazy"
+      >
+      <div class="deportiva-info">
+        <small>KAWASAKI</small>
+        <h3>NINJA / ZX-6R / ZX-10R</h3>
+        <p>
+          Motocicletas reconocidas
+          por su carácter deportivo.
+        </p>
+      </div>
+    </article>
+
+    <article class="deportiva">
+      <img
+        src="https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=850"
+        alt="Motocicleta ilustrativa"
+        loading="lazy"
+      >
+      <div class="deportiva-info">
+        <small>SUZUKI Y OTRAS</small>
+        <h3>GSX-R / GSX / MÁS</h3>
+        <p>
+          Suzuki, Ducati, KTM, BMW
+          y muchas otras motocicletas.
+        </p>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="nota-galeria">
+    Fotografías ilustrativas. No representan necesariamente
+    los modelos mencionados ni productos a la venta.
+  </p>
+
+</section>
+
+<!-- SERVICIOS -->
+
+<section id="servicios" class="seccion">
+
+  <div class="titulo-seccion">
+    <span>SERVICIO MECÁNICO</span>
+    <h2>Servicios del taller</h2>
+    <p>
+      Atención para el cuidado y reparación
+      de tu motocicleta.
+    </p>
+  </div>
+
+  <div class="tarjetas">
+
+    <article class="tarjeta">
+      <img
+        src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900"
+        alt="Reparación de motocicletas"
+        loading="lazy"
+      >
+      <div class="tarjeta-contenido">
+        <h3>🔧 Reparación de motos</h3>
+        <p>
+          Motores, embragues, transmisión,
+          frenos y componentes mecánicos.
+        </p>
+      </div>
+    </article>
+
+    <article class="tarjeta">
+      <img
+        src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900"
+        alt="Mantenimiento de motos"
+        loading="lazy"
+      >
+      <div class="tarjeta-contenido">
+        <h3>🛢️ Mantenimiento</h3>
+        <p>
+          Cambio de aceite, filtros,
+          revisión y mantenimiento preventivo.
+        </p>
+      </div>
+    </article>
+
+    <article class="tarjeta">
+      <img
+        src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=900"
+        alt="Diagnóstico de motocicletas"
+        loading="lazy"
+      >
+      <div class="tarjeta-contenido">
+        <h3>⚙️ Diagnóstico</h3>
+        <p>
+          Revisión de fallas mecánicas
+          y eléctricas de motocicletas.
+        </p>
+      </div>
+    </article>
+
+  </div>
+
+</section>
+
+<!-- REPUESTOS -->
+
+<section id="repuestos" class="seccion fondo-alterno">
+
+  <div class="titulo-seccion">
+    <span>TIENDA LUIGI BIKER</span>
+    <h2>Repuestos y accesorios</h2>
+    <p>
+      Encuentra los productos que necesitas
+      para tu motocicleta.
+    </p>
+  </div>
+
+  <div class="tarjetas">
+
+    <article class="tarjeta producto">
+      <div class="producto-icono">⚙️</div>
+      <h3>Repuestos</h3>
+      <p>
+        Piezas de motor, frenos,
+        transmisión y mantenimiento.
+      </p>
+      <a
+        href="#catalogo"
+        class="btn-producto"
+        data-categoria="repuestos"
+      >
+        Ver repuestos
+      </a>
+    </article>
+
+    <article class="tarjeta producto">
+      <div class="producto-icono">🪖</div>
+      <h3>Accesorios</h3>
+      <p>
+        Cascos y accesorios
+        para motociclistas.
+      </p>
+      <a
+        href="#catalogo"
+        class="btn-producto"
+        data-categoria="accesorios"
+      >
+        Ver accesorios
+      </a>
+    </article>
+
+    <article class="tarjeta producto">
+      <div class="producto-icono">🛢️</div>
+      <h3>Aceites</h3>
+      <p>
+        Lubricantes y productos
+        para mantenimiento.
+      </p>
+      <a
+        href="#catalogo"
+        class="btn-producto"
+        data-categoria="aceites"
+      >
+        Ver aceites
+      </a>
+    </article>
+
+  </div>
+
+  <!-- CATÁLOGO DINÁMICO -->
+
+  <div id="catalogo" class="catalogo-publico">
+
+    <div class="titulo-seccion">
+      <span>CATÁLOGO DEL TALLER</span>
+      <h2>🛒 Productos disponibles</h2>
+      <p>
+        Productos registrados con fotografías,
+        categorías, precios y existencias.
+      </p>
+    </div>
+
+    <div class="catalogo-cabecera">
+      <div>
+        <strong>
+          🏍️ Encuentra lo que necesita tu moto
+        </strong>
+        <p>
+          Busca por nombre o filtra los productos
+          de nuestra tienda.
+        </p>
+      </div>
+
+      <span class="catalogo-etiqueta">
+        ⚙️ INVENTARIO DEL TALLER
+      </span>
+    </div>
+
+    <div class="catalogo-filtros">
+
+      <input
+        type="search"
+        id="buscar-producto-publico"
+        placeholder="🔎 Buscar producto..."
+        aria-label="Buscar producto"
+        autocomplete="off"
+      >
+
+      <select
+        id="categoria-publica"
+        aria-label="Filtrar categoría"
+      >
+        <option value="">
+          Todas las categorías
+        </option>
+      </select>
+
+    </div>
+
+    <p
+      id="mensaje-catalogo"
+      class="mensaje-publico"
+      role="status"
+      aria-live="polite"
+    >
+      Cargando productos...
+    </p>
+
+    <div
+      id="lista-productos-publicos"
+      class="productos-publicos"
+    ></div>
+
+  </div>
+
+</section>
+
+<!-- SEGUIMIENTO -->
+
+<section id="seguimiento" class="seccion">
+
+  <div class="titulo-seccion">
+    <span>SEGUIMIENTO DE REPARACIONES</span>
+    <h2>¿Cómo va tu motocicleta?</h2>
+    <p>
+      Consulta el estado de reparación
+      mediante el número de placa.
+    </p>
+  </div>
+
+  <div class="seguimiento-caja">
+
+    <div class="seguimiento-icono">🏍️</div>
+
+    <h3>Buscar mi motocicleta</h3>
+    <p>Ingresa el número de placa de tu moto.</p>
+
+    <form id="form-buscar-moto">
+
+      <input
+        type="text"
+        id="placa"
+        placeholder="Ejemplo: 7075UXB"
+        maxlength="12"
+        autocomplete="off"
+        required
+      >
+
       <button
-        class="menu-toggle"
-        id="menu-toggle"
-        aria-label="Abrir menú"
-        aria-expanded="false">
-        ☰
+        type="submit"
+        id="btn-buscar-moto"
+        class="btn-principal"
+      >
+        Buscar motocicleta
       </button>
 
-      <div class="nav-links" id="nav-links">
-        <a href="#inicio">Inicio</a>
-        <a href="#servicios">Servicios</a>
-        <a href="#repuestos">Repuestos</a>
-        <a href="#seguimiento">Seguimiento</a>
-        <a href="#contacto">Contacto</a>
+    </form>
 
-        <a href="./login.html" class="btn-acceso">
-          Iniciar sesión
-        </a>
+    <p
+      id="resultado-busqueda"
+      class="resultado-busqueda"
+      role="status"
+      aria-live="polite"
+    ></p>
+
+  </div>
+
+  <div
+    id="seguimiento-resultado"
+    class="seguimiento-resultado"
+    hidden
+  >
+
+    <div class="seguimiento-encabezado">
+
+      <div>
+        <span class="seguimiento-etiqueta">
+          — TU MOTOCICLETA
+        </span>
+
+        <h2 id="moto-titulo"></h2>
+        <p id="moto-subtitulo"></p>
       </div>
-    </nav>
-  </header>
 
-  <!-- PORTADA -->
-  <section id="inicio" class="hero">
-    <div class="hero-contenido">
-      <span class="etiqueta">
-        BIENVENIDO A NUESTRO TALLER
-      </span>
+      <span
+        id="moto-estado"
+        class="estado-publico"
+      ></span>
 
-      <h1>
-        TU MOTO EN LAS
-        <span>MEJORES MANOS</span>
-      </h1>
-
-      <p>
-        En Taller Luigi Biker ofrecemos reparación,
-        mantenimiento y venta de repuestos y accesorios
-        para motocicletas.
-      </p>
-
-      <div class="hero-botones">
-        <a href="#servicios" class="btn-principal">
-          Ver servicios
-        </a>
-
-        <a href="#seguimiento" class="btn-secundario">
-          Seguir mi moto
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- SERVICIOS -->
-  <section id="servicios" class="seccion">
-    <div class="titulo-seccion">
-      <span>NUESTRO TRABAJO</span>
-      <h2>Servicios del taller</h2>
-      <p>
-        Cuidamos tu motocicleta con atención y dedicación.
-      </p>
     </div>
 
-    <div class="tarjetas">
-      <article class="tarjeta">
-        <img
-          src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900"
-          alt="Motocicleta deportiva"
-          loading="lazy"
+    <div class="seguimiento-columnas">
+
+      <div class="seguimiento-izquierda">
+
+        <article class="publico-panel foto-publica-panel">
+
+          <div
+            id="moto-foto"
+            class="moto-foto-publica"
+          ></div>
+
+          <div class="foto-publica-detalles">
+
+            <span
+              id="moto-estado-texto"
+              class="texto-estado-publico"
+            ></span>
+
+            <h3 id="moto-mensaje-estado"></h3>
+            <p id="moto-descripcion-estado"></p>
+
+          </div>
+
+        </article>
+
+        <article class="publico-panel">
+          <h3>DETALLES DE TU MOTO</h3>
+          <div id="moto-datos"></div>
+        </article>
+
+        <article class="publico-panel">
+          <h3>REPUESTOS AGREGADOS</h3>
+          <div id="moto-repuestos"></div>
+        </article>
+
+        <article
+          class="publico-panel aviso-entrega"
+          id="aviso-moto-lista"
+          hidden
         >
-        <div class="tarjeta-contenido">
-          <h3>Reparación de motos</h3>
+
+          <h3>✓ ¡MOTO LISTA PARA ENTREGA!</h3>
+
           <p>
-            Reparación de motores, frenos y sistemas
-            mecánicos de motocicletas.
+            Tu reparación está finalizada.
+            Comunícate con el taller para
+            coordinar la entrega y solicitar
+            tu comprobante.
           </p>
-        </div>
-      </article>
 
-      <article class="tarjeta">
-        <img
-          src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900"
-          alt="Motocicleta para mantenimiento"
-          loading="lazy"
-        >
-        <div class="tarjeta-contenido">
-          <h3>Mantenimiento</h3>
-          <p>
-            Cambio de aceite, revisión general
-            y mantenimiento preventivo.
-          </p>
-        </div>
-      </article>
+          <a href="#contacto" class="btn-principal">
+            Contactar al taller
+          </a>
 
-      <article class="tarjeta">
-        <img
-          src="https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=900"
-          alt="Servicio de diagnóstico"
-          loading="lazy"
-        >
-        <div class="tarjeta-contenido">
-          <h3>Diagnóstico</h3>
-          <p>
-            Revisión y diagnóstico de problemas
-            para encontrar la solución adecuada.
-          </p>
-        </div>
-      </article>
-    </div>
-  </section>
+        </article>
 
-  <!-- REPUESTOS -->
-  <section id="repuestos" class="seccion fondo-alterno">
-    <div class="titulo-seccion">
-      <span>PRODUCTOS</span>
-      <h2>Repuestos y accesorios</h2>
-      <p>
-        Encuentra lo que necesitas para tu motocicleta.
-      </p>
-    </div>
-
-    <div class="tarjetas">
-      <article class="tarjeta producto">
-        <div class="producto-icono">⚙️</div>
-        <h3>Repuestos</h3>
-        <p>Piezas y componentes para motocicletas.</p>
-        <a href="#catalogo" class="btn-producto"
-           data-categoria="repuestos">
-          Consultar
-        </a>
-      </article>
-
-      <article class="tarjeta producto">
-        <div class="producto-icono">🪖</div>
-        <h3>Accesorios</h3>
-        <p>Cascos y accesorios para motociclistas.</p>
-        <a href="#catalogo" class="btn-producto"
-           data-categoria="accesorios">
-          Consultar
-        </a>
-      </article>
-
-      <article class="tarjeta producto">
-        <div class="producto-icono">🛢️</div>
-        <h3>Aceites</h3>
-        <p>Lubricantes y productos para mantenimiento.</p>
-        <a href="#catalogo" class="btn-producto"
-           data-categoria="aceites">
-          Consultar
-        </a>
-      </article>
-    </div>
-
-    <!-- CATÁLOGO REAL -->
-    <div id="catalogo" class="catalogo-publico">
-      <div class="titulo-seccion">
-        <span>TIENDA LUIGI BIKER</span>
-        <h2>Productos disponibles</h2>
-        <p>
-          Consulta precios y existencias actuales.
-        </p>
       </div>
 
-      <div class="catalogo-filtros">
-        <input
-          type="search"
-          id="buscar-producto-publico"
-          placeholder="Buscar producto..."
-          aria-label="Buscar producto"
-        >
+      <div class="seguimiento-derecha">
 
-        <select
-          id="categoria-publica"
-          aria-label="Filtrar categoría">
-          <option value="">Todas las categorías</option>
-        </select>
+        <article class="publico-panel historial-publico">
+          <h3>HISTORIAL DEL SERVICIO</h3>
+          <div id="moto-historial"></div>
+        </article>
+
       </div>
 
-      <p id="mensaje-catalogo" class="mensaje-publico"
-         role="status"></p>
-
-      <div id="lista-productos-publicos"
-           class="productos-publicos"></div>
     </div>
-  </section>
 
-  <!-- SEGUIMIENTO -->
-  <section id="seguimiento" class="seccion">
-    <div class="titulo-seccion">
-      <span>SEGUIMIENTO</span>
-      <h2>¿Cómo va tu motocicleta?</h2>
+    <p class="seguimiento-nota">
+      🔄 El seguimiento se actualiza automáticamente
+      mientras esta página esté abierta.
+    </p>
+
+  </div>
+
+</section>
+
+<!-- CONTACTO Y REDES SOCIALES -->
+
+<section id="contacto" class="seccion fondo-alterno">
+
+  <div class="titulo-seccion">
+    <span>VISÍTANOS Y SÍGUENOS</span>
+    <h2>📍 Contacta con Luigi Biker</h2>
+    <p>
+      Encuéntranos en Google Maps,
+      escríbenos por WhatsApp
+      y síguenos en nuestras redes sociales.
+    </p>
+  </div>
+
+  <div class="contacto-contenido">
+
+    <!-- INFORMACIÓN Y REDES -->
+
+    <div class="contacto-info">
+
+      <h3>🏍️ Taller Luigi Biker</h3>
+
       <p>
-        Consulta el estado de reparación de tu moto,
-        sin crear una cuenta.
+        Estamos para ayudarte con
+        tu motocicleta.
       </p>
-    </div>
 
-    <div class="seguimiento-caja">
-      <div class="seguimiento-icono">🏍️</div>
+      <div class="contacto-dato">
+        <span class="dato-icono">📍</span>
 
-      <h3>Buscar mi motocicleta</h3>
-      <p>Ingresa el número de placa de tu moto.</p>
-
-      <form id="form-buscar-moto">
-        <input
-          type="text"
-          id="placa"
-          placeholder="Ejemplo: 7075UXB"
-          maxlength="12"
-          autocomplete="off"
-          required
-        >
-
-        <button type="submit"
-                id="btn-buscar-moto"
-                class="btn-principal">
-          Buscar motocicleta
-        </button>
-      </form>
-
-      <p
-        id="resultado-busqueda"
-        class="resultado-busqueda"
-        role="status"
-        aria-live="polite">
-      </p>
-    </div>
-
-    <!-- RESULTADO DE LA BÚSQUEDA -->
-    <div id="seguimiento-resultado"
-         class="seguimiento-resultado"
-         hidden>
-
-      <div class="seguimiento-encabezado">
         <div>
-          <span class="seguimiento-etiqueta">
-            — TU MOTOCICLETA
-          </span>
+          <strong>Ubicación del taller</strong>
+          <p>
+            Cochabamba, Bolivia
+          </p>
 
-          <h2 id="moto-titulo"></h2>
-          <p id="moto-subtitulo"></p>
-        </div>
-
-        <span id="moto-estado" class="estado-publico"></span>
-      </div>
-
-      <div class="seguimiento-columnas">
-        <div class="seguimiento-izquierda">
-
-          <article class="publico-panel foto-publica-panel">
-            <div id="moto-foto"
-                 class="moto-foto-publica"></div>
-
-            <div class="foto-publica-detalles">
-              <span id="moto-estado-texto"
-                    class="texto-estado-publico"></span>
-
-              <h3 id="moto-mensaje-estado"></h3>
-              <p id="moto-descripcion-estado"></p>
-            </div>
-          </article>
-
-          <article class="publico-panel">
-            <h3>DETALLES DE TU MOTO</h3>
-            <div id="moto-datos"></div>
-          </article>
-
-          <article class="publico-panel">
-            <h3>REPUESTOS AGREGADOS</h3>
-            <div id="moto-repuestos"></div>
-          </article>
-
-          <article class="publico-panel aviso-entrega"
-                   id="aviso-moto-lista" hidden>
-            <h3>✓ ¡MOTO LISTA PARA ENTREGA!</h3>
-            <p>
-              Tu reparación está finalizada.
-              Comunícate con el taller para coordinar
-              la entrega y solicitar tu comprobante.
-            </p>
-            <a href="#contacto" class="btn-principal">
-              Contactar al taller
+          <p>
+            <a
+              href="https://maps.app.goo.gl/2YLdPK4aUkMGF1QM8"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ver ubicación exacta
             </a>
-          </article>
-        </div>
-
-        <div class="seguimiento-derecha">
-          <article class="publico-panel historial-publico">
-            <h3>HISTORIAL DEL SERVICIO</h3>
-            <div id="moto-historial"></div>
-          </article>
+          </p>
         </div>
       </div>
 
-      <p class="seguimiento-nota">
-        🔄 El seguimiento se actualiza automáticamente
-        mientras esta página esté abierta.
-        Solo se muestra información pública del servicio.
-      </p>
-    </div>
-  </section>
+      <div class="contacto-dato">
+        <span class="dato-icono">📱</span>
 
-  <!-- CONTACTO -->
-  <section id="contacto" class="seccion fondo-alterno">
-    <div class="titulo-seccion">
-      <span>CONTÁCTANOS</span>
-      <h2>Visítanos</h2>
+        <div>
+          <strong>WhatsApp del taller</strong>
+
+          <p>
+            <a
+              href="https://wa.me/59170784692?text=Hola%20Taller%20Luigi%20Biker%2C%20quiero%20hacer%20una%20consulta."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              +591 70784692
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="contacto-dato">
+        <span class="dato-icono">🔧</span>
+
+        <div>
+          <strong>Servicios</strong>
+          <p>
+            Reparación, mantenimiento,
+            diagnóstico y repuestos.
+          </p>
+        </div>
+      </div>
+
+      <h4 class="redes-titulo">
+        🌐 Nuestras redes sociales
+      </h4>
+
+      <div class="redes-sociales">
+
+        <!-- TIKTOK -->
+
+        <a
+          class="red-social red-tiktok"
+          href="https://www.tiktok.com/@luigibiker.6?lang=es-419"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visitar TikTok de Luigi Biker"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16.6 1h-3.3v14.4a3.3 3.3 0 1 1-3.3-3.3c.3 0 .6 0 .9.1V8.8a6.8 6.8 0 1 0 5.7 6.7V8.2a9 9 0 0 0 5.3 1.7V6.6A5.4 5.4 0 0 1 16.6 1z"/>
+          </svg>
+          TikTok
+        </a>
+
+        <!-- FACEBOOK -->
+
+        <a
+          class="red-social red-facebook"
+          href="https://www.facebook.com/profile.php?id=100086707860112"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visitar Facebook de Luigi Biker"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/>
+          </svg>
+          Facebook
+        </a>
+
+        <!-- WHATSAPP -->
+
+        <a
+          class="red-social red-whatsapp"
+          href="https://wa.me/59170784692?text=Hola%20Taller%20Luigi%20Biker%2C%20quiero%20hacer%20una%20consulta."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Escribir por WhatsApp"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.5 0 .1 5.4.1 12c0 2.1.5 4.1 1.6 5.9L0 24l6.3-1.6c1.8 1 3.8 1.5 5.8 1.5h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.2-3.5-8.5zM12.1 21.9c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.7 1 1-3.6-.2-.4A9.8 9.8 0 1 1 12.1 21.9zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.7l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.1 3c.2.2 2 3.1 4.9 4.3 2.9 1.2 2.9.8 3.4.8s1.7-.7 1.9-1.4c.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/>
+          </svg>
+          WhatsApp
+        </a>
+
+        <!-- GOOGLE MAPS -->
+
+        <a
+          class="red-social red-maps"
+          href="https://maps.app.goo.gl/2YLdPK4aUkMGF1QM8"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir ubicación en Google Maps"
+        >
+          📍 Google Maps
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- MAPA INTERACTIVO -->
+
+    <div class="contacto-mapa">
+
+      <h3>📍 Encuentra nuestro taller</h3>
+
       <p>
-        Estamos para ayudarte con tu motocicleta.
+        Estamos ubicados en Cochabamba.
+        Puedes explorar el mapa, acercarlo
+        o abrir la ubicación en Google Maps
+        para obtener indicaciones.
       </p>
-    </div>
 
-    <div class="contacto-contenido">
-      <div class="contacto-info">
-        <h3>🏍️ Taller Luigi Biker</h3>
-        <p>📍 Ubicación: Próximamente</p>
-        <p>📱 Celular: Próximamente</p>
-        <p>🕒 Horarios: Próximamente</p>
+      <div class="mapa-contenedor">
 
-        <div class="redes">
-          <span>Facebook</span>
-          <span>TikTok</span>
-          <span>WhatsApp</span>
-        </div>
+        <iframe
+          title="Ubicación de Taller Luigi Biker en Google Maps"
+          src="https://www.google.com/maps?q=-17.3813124,-66.1765236&z=17&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+
       </div>
 
-      <div class="contacto-mapa">
-        <h3>📍 Nuestra ubicación</h3>
-        <p>
-          Aquí agregaremos el mapa de Google Maps
-          y la fotografía real del taller.
-        </p>
-      </div>
-    </div>
-  </section>
+      <div class="mapa-acciones">
 
-  <footer>
-    <h3>🏍️ TALLER LUIGI BIKER</h3>
-    <p>
-      Pasión por las motos, calidad en cada reparación.
-    </p>
-    <p>
-      © 2026 Taller Luigi Biker.
-      Todos los derechos reservados.
-    </p>
-  </footer>
+        <a
+          class="btn-mapa"
+          href="https://maps.app.goo.gl/2YLdPK4aUkMGF1QM8"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📍 Abrir ubicación en Google Maps
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- PIE DE PÁGINA -->
+
+<footer>
+
+  <h3>🏍️ TALLER LUIGI BIKER</h3>
+
+  <p>
+    Pasión por las motos,
+    calidad en cada reparación.
+  </p>
+
+  <p>
+    📱 WhatsApp: +591 70784692
+  </p>
+
+  <p>
+    Cochabamba, Bolivia
+  </p>
+
+  <p>
+    © 2026 Taller Luigi Biker.
+    Todos los derechos reservados.
+  </p>
+
+</footer>
+
+<!-- WHATSAPP FLOTANTE -->
+
+<a
+  class="whatsapp-flotante"
+  href="https://wa.me/59170784692?text=Hola%20Taller%20Luigi%20Biker%2C%20quiero%20hacer%20una%20consulta."
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Contactar a Taller Luigi Biker por WhatsApp"
+  title="Escríbenos por WhatsApp"
+>
+
+  <span class="whatsapp-texto">
+    ¿Necesitas ayuda? Escríbenos
+  </span>
+
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.5 0 .1 5.4.1 12c0 2.1.5 4.1 1.6 5.9L0 24l6.3-1.6c1.8 1 3.8 1.5 5.8 1.5h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.2-3.5-8.5zM12.1 21.9c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.7 1 1-3.6-.2-.4A9.8 9.8 0 1 1 12.1 21.9zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.7l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.1 3c.2.2 2 3.1 4.9 4.3 2.9 1.2 2.9.8 3.4.8s1.7-.7 1.9-1.4c.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/>
+  </svg>
+
+</a>
+
 </body>
 </html>
