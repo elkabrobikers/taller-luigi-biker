@@ -2,23 +2,39 @@
 import { supabase } from "./supabase.js";
 
 // ==========================================
-// TALLER LUIGI BIKER
-// PÁGINA PÚBLICA
+// TALLER LUIGI BIKER - PÁGINA PÚBLICA
 // ==========================================
 
-const $ = id => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
 let placaConsultada = "";
 let datosAnteriores = "";
 let buscando = false;
 let productos = [];
 let ultimaBusqueda = 0;
+let catalogoCargado = false;
+
+// ==========================================
+// FUNCIONES GENERALES
+// ==========================================
 
 function crear(etiqueta, texto = "", clase = "") {
   const elemento = document.createElement(etiqueta);
   elemento.textContent = String(texto ?? "");
-  if (clase) elemento.className = clase;
+
+  if (clase) {
+    elemento.className = clase;
+  }
+
   return elemento;
+}
+
+function mensaje(id, texto) {
+  const elemento = $(id);
+
+  if (elemento) {
+    elemento.textContent = texto;
+  }
 }
 
 function fecha(valor) {
@@ -48,12 +64,28 @@ function limpiarPlaca(valor) {
     .slice(0, 12);
 }
 
+function descripcionError(error) {
+  if (!error) return "Error desconocido.";
+
+  const partes = [
+    error.message,
+    error.details,
+    error.hint
+  ].filter(Boolean);
+
+  return partes.join(" | ") || String(error);
+}
+
 function agregarDato(destino, titulo, valor) {
+  if (!destino) return;
+
   const fila = crear("div", "", "dato-publico");
+
   fila.append(
     crear("span", titulo),
-    crear("strong", valor || "No registrado")
+    crear("strong", valor ?? "No registrado")
   );
+
   destino.appendChild(fila);
 }
 
@@ -64,6 +96,8 @@ function agregarEvento(
   fechaEvento,
   pendiente = false
 ) {
+  if (!destino) return;
+
   const evento = crear(
     "div",
     "",
@@ -80,8 +114,8 @@ function agregarEvento(
 
   contenido.append(
     crear("h4", titulo),
-    crear("p", descripcion),
-    crear("small", fechaEvento)
+    crear("p", descripcion || "Sin descripción"),
+    crear("small", fechaEvento || "Sin fecha")
   );
 
   evento.append(punto, contenido);
@@ -89,13 +123,15 @@ function agregarEvento(
 }
 
 // ==========================================
-// MENÚ PARA CELULARES
+// MENÚ DE CELULARES
 // ==========================================
 
-const botonMenu = $("menu-toggle");
-const enlacesMenu = $("nav-links");
+function iniciarMenu() {
+  const botonMenu = $("menu-toggle");
+  const enlacesMenu = $("nav-links");
 
-if (botonMenu && enlacesMenu) {
+  if (!botonMenu || !enlacesMenu) return;
+
   botonMenu.addEventListener("click", () => {
     const abierto = enlacesMenu.classList.toggle("activo");
 
@@ -107,7 +143,7 @@ if (botonMenu && enlacesMenu) {
     botonMenu.textContent = abierto ? "✕" : "☰";
   });
 
-  document.querySelectorAll(".nav-links a").forEach(enlace => {
+  document.querySelectorAll(".nav-links a").forEach((enlace) => {
     enlace.addEventListener("click", () => {
       enlacesMenu.classList.remove("activo");
       botonMenu.setAttribute("aria-expanded", "false");
@@ -117,44 +153,424 @@ if (botonMenu && enlacesMenu) {
 }
 
 // ==========================================
-// BUSCAR MOTO SIN INICIAR SESIÓN
+// FOTOGRAFÍAS DE SUPABASE
 // ==========================================
 
-$("form-buscar-moto").addEventListener(
-  "submit",
-  async evento => {
+function obtenerUrlFoto(rutaGuardada, bucket) {
+  const ruta = String(rutaGuardada || "").trim();
+
+  if (!ruta) return null;
+
+  // Permitir enlaces HTTPS completos.
+  if (/^https:\/\//i.test(ruta)) {
+    return ruta;
+  }
+
+  // Rechazar enlaces HTTP u otros esquemas.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(ruta)) {
+    return null;
+  }
+
+  // Evitar duplicar el nombre del bucket.
+  const prefijo = `${bucket}/`;
+
+  const rutaLimpia = ruta.startsWith(prefijo)
+    ? ruta.slice(prefijo.length)
+    : ruta;
+
+  if (!rutaLimpia) return null;
+
+  const { data } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(rutaLimpia);
+
+  return data?.publicUrl || null;
+}
+
+// ==========================================
+// CATÁLOGO PÚBLICO
+// ==========================================
+
+function normalizarProductos(data) {
+  // Formato habitual de una función que devuelve una lista.
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  // Algunas funciones devuelven un objeto con una lista.
+  if (data && typeof data === "object") {
+    if (Array.isArray(data.productos)) {
+      return data.productos;
+    }
+
+    if (Array.isArray(data.data)) {
+      return data.data;
+    }
+
+    if (Array.isArray(data.items)) {
+      return data.items;
+    }
+  }
+
+  return [];
+}
+
+async function cargarCatalogo() {
+  const destino = $("lista-productos-publicos");
+
+  if (!destino) {
+    console.error(
+      "No existe el elemento lista-productos-publicos en index.html."
+    );
+    return;
+  }
+
+  catalogoCargado = false;
+
+  mensaje(
+    "mensaje-catalogo",
+    "⏳ Cargando productos disponibles..."
+  );
+
+  destino.replaceChildren();
+
+  try {
+    const { data, error } = await supabase.rpc(
+      "consultar_catalogo_publico"
+    );
+
+    if (error) throw error;
+
+    console.log("Respuesta del catálogo:", data);
+
+    productos = normalizarProductos(data);
+
+    // Permite reconocer un formato inesperado.
+    if (
+      data !== null &&
+      !Array.isArray(data) &&
+      !Array.isArray(data?.productos) &&
+      !Array.isArray(data?.data) &&
+      !Array.isArray(data?.items)
+    ) {
+      console.warn(
+        "La función consultar_catalogo_publico devolvió un formato diferente:",
+        data
+      );
+
+      mensaje(
+        "mensaje-catalogo",
+        "La consulta respondió, pero el formato del catálogo no es una lista de productos."
+      );
+    } else {
+      mensaje("mensaje-catalogo", "");
+    }
+
+    const selector = $("categoria-publica");
+
+    if (selector) {
+      const seleccionAnterior = selector.value;
+
+      selector.replaceChildren(
+        new Option("Todas las categorías", "")
+      );
+
+      const categorias = [
+        ...new Set(
+          productos
+            .map((producto) => producto.categoria)
+            .filter(Boolean)
+        )
+      ].sort();
+
+      for (const categoria of categorias) {
+        selector.add(
+          new Option(categoria, categoria)
+        );
+      }
+
+      if (
+        Array.from(selector.options).some(
+          (opcion) => opcion.value === seleccionAnterior
+        )
+      ) {
+        selector.value = seleccionAnterior;
+      }
+    }
+
+    catalogoCargado = true;
+    dibujarCatalogo();
+
+    console.log(
+      "Productos encontrados:",
+      productos.length
+    );
+
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+
+    mensaje(
+      "mensaje-catalogo",
+      "❌ No se pudo cargar el catálogo: " +
+      descripcionError(error)
+    );
+
+    destino.replaceChildren(
+      crear(
+        "p",
+        "No fue posible consultar los productos de Supabase."
+      )
+    );
+  }
+}
+
+// ==========================================
+// DIBUJAR PRODUCTOS
+// ==========================================
+
+function dibujarCatalogo() {
+  const destino = $("lista-productos-publicos");
+
+  if (!destino) return;
+
+  destino.replaceChildren();
+
+  if (!catalogoCargado) return;
+
+  const busqueda = String(
+    $("buscar-producto-publico")?.value || ""
+  ).trim().toLowerCase();
+
+  const categoria = String(
+    $("categoria-publica")?.value || ""
+  ).trim().toLowerCase();
+
+  const filtrados = productos.filter((producto) => {
+    const texto = [
+      producto.nombre,
+      producto.descripcion,
+      producto.categoria
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const coincideBusqueda = texto.includes(busqueda);
+
+    const coincideCategoria =
+      !categoria ||
+      String(producto.categoria || "")
+        .toLowerCase() === categoria;
+
+    return coincideBusqueda && coincideCategoria;
+  });
+
+  if (!filtrados.length) {
+    const texto = productos.length === 0
+      ? "Todavía no hay productos publicados en el catálogo."
+      : "No encontramos productos con esos filtros.";
+
+    destino.appendChild(crear("p", texto));
+    return;
+  }
+
+  for (const producto of filtrados) {
+    const tarjeta = crear(
+      "article",
+      "",
+      "producto-publico"
+    );
+
+    // Fotografía
+    const foto = crear(
+      "div",
+      "📦 Imagen no disponible",
+      "producto-publico-imagen"
+    );
+
+    const urlFoto = obtenerUrlFoto(
+      producto.foto_url,
+      "fotos-productos"
+    );
+
+    if (urlFoto) {
+      const imagen = document.createElement("img");
+
+      imagen.src = urlFoto;
+      imagen.alt = producto.nombre || "Producto";
+      imagen.loading = "lazy";
+
+      imagen.onerror = () => {
+        foto.textContent = "📦 Imagen no disponible";
+      };
+
+      foto.replaceChildren(imagen);
+    }
+
+    // Información
+    const info = crear(
+      "div",
+      "",
+      "producto-publico-info"
+    );
+
+    const nombre = crear(
+      "h3",
+      producto.nombre || "Producto sin nombre"
+    );
+
+    const descripcion = crear(
+      "p",
+      producto.descripcion || "Producto disponible."
+    );
+
+    const categoriaTexto = crear(
+      "p",
+      `Categoría: ${producto.categoria || "General"}`
+    );
+
+    const precioNumero = Number(producto.precio);
+
+    const precio = crear(
+      "div",
+      `Bs. ${
+        Number.isFinite(precioNumero)
+          ? precioNumero.toFixed(2)
+          : "0.00"
+      }`,
+      "producto-publico-precio"
+    );
+
+    const stockNumero = Number(producto.stock ?? 0);
+
+    const stock = crear(
+      "div",
+      stockNumero > 0
+        ? `✓ Disponibles: ${stockNumero}`
+        : "Sin existencias",
+      "producto-publico-stock"
+    );
+
+    if (stockNumero <= 0) {
+      stock.style.background = "#49302a";
+      stock.style.color = "#ffb5a1";
+      stock.style.borderColor = "#835043";
+    }
+
+    info.append(
+      nombre,
+      descripcion,
+      categoriaTexto,
+      precio,
+      stock
+    );
+
+    tarjeta.append(foto, info);
+    destino.appendChild(tarjeta);
+  }
+}
+
+// ==========================================
+// FILTROS Y BOTONES
+// ==========================================
+
+function iniciarFiltros() {
+  $("buscar-producto-publico")?.addEventListener(
+    "input",
+    dibujarCatalogo
+  );
+
+  $("categoria-publica")?.addEventListener(
+    "change",
+    dibujarCatalogo
+  );
+
+  document.querySelectorAll("[data-categoria]").forEach(
+    (enlace) => {
+      enlace.addEventListener("click", () => {
+        const categoriaBuscada = String(
+          enlace.dataset.categoria || ""
+        ).toLowerCase();
+
+        const selector = $("categoria-publica");
+
+        if (!selector) return;
+
+        const opcion = Array.from(selector.options).find(
+          (opcionActual) =>
+            opcionActual.value
+              .toLowerCase()
+              .includes(categoriaBuscada)
+        );
+
+        selector.value = opcion ? opcion.value : "";
+        dibujarCatalogo();
+      });
+    }
+  );
+}
+
+// ==========================================
+// BUSCAR MOTOCICLETA POR PLACA
+// ==========================================
+
+function iniciarBusquedaMoto() {
+  const formulario = $("form-buscar-moto");
+
+  if (!formulario) {
+    console.error(
+      "No existe form-buscar-moto en index.html."
+    );
+    return;
+  }
+
+  formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
-    const placa = limpiarPlaca($("placa").value);
-    $("placa").value = placa;
+    const campoPlaca = $("placa");
+
+    if (!campoPlaca) return;
+
+    const placa = limpiarPlaca(campoPlaca.value);
+    campoPlaca.value = placa;
 
     if (placa.length < 4) {
-      $("resultado-busqueda").textContent =
-        "Ingresa una placa válida.";
+      mensaje(
+        "resultado-busqueda",
+        "Ingresa una placa válida."
+      );
       return;
     }
 
     placaConsultada = placa;
     datosAnteriores = "";
-    $("seguimiento-resultado").hidden = true;
+
+    const resultado = $("seguimiento-resultado");
+
+    if (resultado) {
+      resultado.hidden = true;
+    }
 
     await consultarMoto();
-  }
-);
+  });
+}
 
 async function consultarMoto(silencioso = false) {
   if (!placaConsultada || buscando) return;
 
   buscando = true;
+
   const placaSolicitada = placaConsultada;
   const numeroBusqueda = ++ultimaBusqueda;
-
   const boton = $("btn-buscar-moto");
-  boton.disabled = true;
+
+  if (boton) boton.disabled = true;
 
   if (!silencioso) {
-    $("resultado-busqueda").textContent =
-      "Buscando motocicleta...";
+    mensaje(
+      "resultado-busqueda",
+      "⏳ Buscando motocicleta..."
+    );
   }
 
   try {
@@ -165,33 +581,49 @@ async function consultarMoto(silencioso = false) {
 
     if (error) throw error;
 
-    if (numeroBusqueda !== ultimaBusqueda ||
-        placaSolicitada !== placaConsultada) {
+    console.log("Respuesta del seguimiento:", data);
+
+    if (
+      numeroBusqueda !== ultimaBusqueda ||
+      placaSolicitada !== placaConsultada
+    ) {
       return;
     }
 
-    if (!data?.encontrada) {
-      $("seguimiento-resultado").hidden = true;
-      $("resultado-busqueda").textContent =
-        "No encontramos esa motocicleta. " +
-        "Verifica la placa o consulta al taller.";
+    if (!data || !data.encontrada) {
+      const resultado = $("seguimiento-resultado");
+
+      if (resultado) {
+        resultado.hidden = true;
+      }
+
+      mensaje(
+        "resultado-busqueda",
+        "No encontramos esa motocicleta. Verifica la placa."
+      );
+
       return;
     }
 
     const contenido = JSON.stringify(data);
 
     if (contenido !== datosAnteriores) {
-      const habiaResultado =
-        !$("seguimiento-resultado").hidden;
+      const resultado = $("seguimiento-resultado");
+
+      const habiaResultado = resultado
+        ? !resultado.hidden
+        : false;
 
       datosAnteriores = contenido;
       dibujarSeguimiento(data);
 
       if (silencioso && habiaResultado) {
-        $("resultado-busqueda").textContent =
-          "🔔 El seguimiento de tu moto se ha actualizado.";
+        mensaje(
+          "resultado-busqueda",
+          "🔔 El seguimiento de tu moto se ha actualizado."
+        );
       } else {
-        $("resultado-busqueda").textContent = "";
+        mensaje("resultado-busqueda", "");
       }
     }
 
@@ -199,45 +631,64 @@ async function consultarMoto(silencioso = false) {
     console.error("Error de seguimiento:", error);
 
     if (!silencioso) {
-      $("resultado-busqueda").textContent =
-        "No se pudo consultar el seguimiento: " +
-        error.message;
+      mensaje(
+        "resultado-busqueda",
+        "❌ No se pudo consultar la motocicleta: " +
+        descripcionError(error)
+      );
     }
+
   } finally {
     buscando = false;
-    boton.disabled = false;
+
+    if (boton) {
+      boton.disabled = false;
+    }
   }
 }
 
 // ==========================================
-// MOSTRAR DATOS DE LA MOTOCICLETA
+// MOSTRAR SEGUIMIENTO
 // ==========================================
 
 function dibujarSeguimiento(data) {
   const moto = data.moto || {};
-  const trabajo = data.reparacion;
+  const trabajo = data.reparacion || null;
+
   const avances = Array.isArray(data.avances)
     ? data.avances
     : [];
+
   const repuestos = Array.isArray(data.repuestos)
     ? data.repuestos
     : [];
 
   const estado = trabajo?.estado || "sin_reparacion";
 
-  $("moto-titulo").textContent =
-    `${moto.marca || "Motocicleta"} ${moto.modelo || ""}`;
+  mensaje(
+    "moto-titulo",
+    `${moto.marca || "Motocicleta"} ${moto.modelo || ""}`
+  );
 
-  $("moto-subtitulo").textContent =
-    `Placa ${moto.placa || ""}`;
+  mensaje(
+    "moto-subtitulo",
+    `Placa ${moto.placa || ""}`
+  );
 
-  $("moto-estado").textContent = estadoTexto(estado);
-  $("moto-estado").className =
-    "estado-publico" +
-    (estado === "finalizada" ? " finalizada" : "");
+  const etiquetaEstado = $("moto-estado");
 
-  $("moto-estado-texto").textContent =
-    "● " + estadoTexto(estado);
+  if (etiquetaEstado) {
+    etiquetaEstado.textContent = estadoTexto(estado);
+
+    etiquetaEstado.className =
+      "estado-publico" +
+      (estado === "finalizada" ? " finalizada" : "");
+  }
+
+  mensaje(
+    "moto-estado-texto",
+    "● " + estadoTexto(estado)
+  );
 
   const titulos = {
     recibida: "HEMOS RECIBIDO TU MOTO",
@@ -254,66 +705,44 @@ function dibujarSeguimiento(data) {
       "El trabajo terminó. Consulta al taller para la entrega."
   };
 
-  $("moto-mensaje-estado").textContent =
-    titulos[estado] || "SEGUIMIENTO DE TU MOTO";
+  mensaje(
+    "moto-mensaje-estado",
+    titulos[estado] || "SEGUIMIENTO DE TU MOTO"
+  );
 
-  $("moto-descripcion-estado").textContent =
+  mensaje(
+    "moto-descripcion-estado",
     descripciones[estado] ||
-    "Todavía no hay una reparación registrada.";
+      "Todavía no hay una reparación registrada."
+  );
 
   dibujarFoto(moto);
   dibujarDatos(moto, trabajo);
   dibujarHistorial(trabajo, avances);
   dibujarRepuestos(repuestos);
 
-  $("aviso-moto-lista").hidden =
-    estado !== "finalizada";
+  const aviso = $("aviso-moto-lista");
 
-  $("seguimiento-resultado").hidden = false;
+  if (aviso) {
+    aviso.hidden = estado !== "finalizada";
+  }
+
+  const resultado = $("seguimiento-resultado");
+
+  if (resultado) {
+    resultado.hidden = false;
+  }
 }
 
 // ==========================================
-// FOTOGRAFÍAS PÚBLICAS DE SUPABASE
-// ==========================================
-
-// Convierte la ruta de una fotografía en una URL pública.
-// Los buckets fotos-motos y fotos-productos
-// deben estar configurados como públicos.
-function obtenerUrlFoto(rutaGuardada, bucket) {
-  const ruta = String(rutaGuardada || "").trim();
-
-  if (!ruta) return null;
-
-  // Si ya es un enlace HTTPS completo.
-  if (/^https:\/\//i.test(ruta)) {
-    return ruta;
-  }
-
-  // Rechazar otros esquemas de URL.
-  if (/^[a-z][a-z0-9+.-]*:/i.test(ruta)) {
-    return null;
-  }
-
-  // Evitar duplicar el nombre del bucket.
-  const prefijo = `${bucket}/`;
-
-  const rutaLimpia = ruta.startsWith(prefijo)
-    ? ruta.slice(prefijo.length)
-    : ruta;
-
-  const { data } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(rutaLimpia);
-
-  return data?.publicUrl || null;
-}
-
-// ==========================================
-// MOSTRAR FOTO DE LA MOTOCICLETA
+// FOTO DE LA MOTO
 // ==========================================
 
 function dibujarFoto(moto) {
   const contenedor = $("moto-foto");
+
+  if (!contenedor) return;
+
   contenedor.replaceChildren();
 
   const url = obtenerUrlFoto(
@@ -323,10 +752,7 @@ function dibujarFoto(moto) {
 
   if (!url) {
     contenedor.appendChild(
-      crear(
-        "div",
-        "🏍️ Fotografía no disponible"
-      )
+      crear("div", "🏍️ Fotografía no disponible")
     );
     return;
   }
@@ -336,14 +762,10 @@ function dibujarFoto(moto) {
   imagen.src = url;
   imagen.alt = `Motocicleta ${moto.placa || ""}`;
   imagen.loading = "lazy";
-  imagen.referrerPolicy = "no-referrer";
 
   imagen.onerror = () => {
     contenedor.replaceChildren(
-      crear(
-        "div",
-        "🏍️ No se pudo cargar la fotografía"
-      )
+      crear("div", "🏍️ No se pudo cargar la fotografía")
     );
   };
 
@@ -356,6 +778,9 @@ function dibujarFoto(moto) {
 
 function dibujarDatos(moto, trabajo) {
   const destino = $("moto-datos");
+
+  if (!destino) return;
+
   destino.replaceChildren();
 
   agregarDato(destino, "Placa", moto.placa);
@@ -371,8 +796,10 @@ function dibujarDatos(moto, trabajo) {
     );
   }
 
-  if (trabajo?.estado === "finalizada" &&
-      trabajo.fecha_entrega) {
+  if (
+    trabajo?.estado === "finalizada" &&
+    trabajo.fecha_entrega
+  ) {
     agregarDato(
       destino,
       "Finalización",
@@ -382,11 +809,14 @@ function dibujarDatos(moto, trabajo) {
 }
 
 // ==========================================
-// HISTORIAL DEL SERVICIO
+// HISTORIAL DE REPARACIÓN
 // ==========================================
 
 function dibujarHistorial(trabajo, avances) {
   const destino = $("moto-historial");
+
+  if (!destino) return;
+
   destino.replaceChildren();
 
   if (!trabajo) {
@@ -451,6 +881,9 @@ function dibujarHistorial(trabajo, avances) {
 
 function dibujarRepuestos(repuestos) {
   const destino = $("moto-repuestos");
+
+  if (!destino) return;
+
   destino.replaceChildren();
 
   if (!repuestos.length) {
@@ -473,10 +906,10 @@ function dibujarRepuestos(repuestos) {
     const informacion = crear("div");
 
     informacion.append(
-      crear("strong", repuesto.nombre),
+      crear("strong", repuesto.nombre || "Repuesto"),
       crear(
         "small",
-        `Cantidad: ${repuesto.cantidad}`
+        `Cantidad: ${repuesto.cantidad ?? 1}`
       )
     );
 
@@ -486,234 +919,47 @@ function dibujarRepuestos(repuestos) {
 }
 
 // ==========================================
-// CATÁLOGO PÚBLICO
-// ==========================================
-
-async function cargarCatalogo() {
-  $("mensaje-catalogo").textContent =
-    "Cargando productos disponibles...";
-
-  try {
-    const { data, error } = await supabase.rpc(
-      "consultar_catalogo_publico"
-    );
-
-    if (error) throw error;
-
-    productos = Array.isArray(data) ? data : [];
-
-    const selector = $("categoria-publica");
-
-    selector.replaceChildren(
-      new Option("Todas las categorías", "")
-    );
-
-    const categorias = [
-      ...new Set(
-        productos
-          .map(p => p.categoria)
-          .filter(Boolean)
-      )
-    ].sort();
-
-    for (const categoria of categorias) {
-      selector.add(
-        new Option(categoria, categoria)
-      );
-    }
-
-    $("mensaje-catalogo").textContent = "";
-
-    dibujarCatalogo();
-
-  } catch (error) {
-    console.error("Error de catálogo:", error);
-
-    $("mensaje-catalogo").textContent =
-      "No se pudo cargar el catálogo: " +
-      error.message;
-  }
-}
-
-// ==========================================
-// MOSTRAR PRODUCTOS Y SUS FOTOGRAFÍAS
-// ==========================================
-
-function dibujarCatalogo() {
-  const destino = $("lista-productos-publicos");
-
-  destino.replaceChildren();
-
-  const busqueda = $("buscar-producto-publico")
-    .value.trim().toLowerCase();
-
-  const categoria = $("categoria-publica")
-    .value.trim().toLowerCase();
-
-  const filtrados = productos.filter(producto => {
-    const texto =
-      `${producto.nombre} ${producto.descripcion || ""}`
-        .toLowerCase();
-
-    return texto.includes(busqueda) &&
-      (
-        !categoria ||
-        String(producto.categoria || "")
-          .toLowerCase() === categoria
-      );
-  });
-
-  if (!filtrados.length) {
-    destino.appendChild(
-      crear(
-        "p",
-        "No hay productos disponibles con ese filtro."
-      )
-    );
-    return;
-  }
-
-  for (const producto of filtrados) {
-    const tarjeta = crear(
-      "article",
-      "",
-      "producto-publico"
-    );
-
-    const foto = crear(
-      "div",
-      "📦 Imagen no disponible",
-      "producto-publico-imagen"
-    );
-
-    // OBTENER FOTO DEL PRODUCTO
-    const urlFoto = obtenerUrlFoto(
-      producto.foto_url,
-      "fotos-productos"
-    );
-
-    if (urlFoto) {
-      const imagen = document.createElement("img");
-
-      imagen.src = urlFoto;
-      imagen.alt = producto.nombre;
-      imagen.loading = "lazy";
-      imagen.referrerPolicy = "no-referrer";
-
-      imagen.onerror = () => {
-        foto.textContent =
-          "📦 Imagen no disponible";
-      };
-
-      foto.replaceChildren(imagen);
-    }
-
-    const info = crear(
-      "div",
-      "",
-      "producto-publico-info"
-    );
-
-    info.append(
-      crear("h3", producto.nombre),
-      crear(
-        "p",
-        producto.descripcion ||
-          "Producto disponible."
-      ),
-      crear(
-        "p",
-        `Categoría: ${producto.categoria}`
-      ),
-      crear(
-        "div",
-        `Bs. ${Number(
-          producto.precio || 0
-        ).toFixed(2)}`,
-        "producto-publico-precio"
-      ),
-      crear(
-        "div",
-        `Disponibles: ${producto.stock}`,
-        "producto-publico-stock"
-      )
-    );
-
-    tarjeta.append(foto, info);
-    destino.appendChild(tarjeta);
-  }
-}
-
-// ==========================================
-// BUSCAR Y FILTRAR PRODUCTOS
-// ==========================================
-
-$("buscar-producto-publico").addEventListener(
-  "input",
-  dibujarCatalogo
-);
-
-$("categoria-publica").addEventListener(
-  "change",
-  dibujarCatalogo
-);
-
-// ==========================================
-// BOTONES CONSULTAR DE LA PORTADA
-// ==========================================
-
-document.querySelectorAll("[data-categoria]").forEach(
-  enlace => {
-    enlace.addEventListener("click", () => {
-      const categoriaBuscada =
-        enlace.dataset.categoria.toLowerCase();
-
-      const selector = $("categoria-publica");
-
-      const opcion = Array.from(
-        selector.options
-      ).find(
-        o => o.value
-          .toLowerCase()
-          .includes(categoriaBuscada)
-      );
-
-      selector.value = opcion
-        ? opcion.value
-        : "";
-
-      dibujarCatalogo();
-    });
-  }
-);
-
-// ==========================================
 // ACTUALIZACIONES AUTOMÁTICAS
 // ==========================================
 
-// Consulta cada 15 segundos mientras
-// la página esté visible.
-// No necesita acceso de escritura.
-setInterval(() => {
-  if (document.hidden) return;
+function iniciarActualizaciones() {
+  setInterval(() => {
+    if (document.hidden) return;
 
-  if (placaConsultada) {
-    consultarMoto(true);
-  }
-}, 15000);
-
-// Actualizar al regresar a la página.
-document.addEventListener(
-  "visibilitychange",
-  () => {
-    if (!document.hidden && placaConsultada) {
+    if (placaConsultada) {
       consultarMoto(true);
     }
-  }
-);
+  }, 15000);
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (!document.hidden && placaConsultada) {
+        consultarMoto(true);
+      }
+    }
+  );
+}
 
 // ==========================================
-// INICIAR SISTEMA
+// INICIAR LA PÁGINA
 // ==========================================
 
-cargarCatalogo();
+function iniciarPagina() {
+  console.log("🏍️ Iniciando Taller Luigi Biker");
+
+  iniciarMenu();
+  iniciarFiltros();
+  iniciarBusquedaMoto();
+  iniciarActualizaciones();
+  cargarCatalogo();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    iniciarPagina
+  );
+} else {
+  iniciarPagina();
+}
